@@ -1,0 +1,324 @@
+# Contributing to Open Unity
+
+First off, thank you for considering contributing to Open Unity! It's people like you that make Open Unity such a great tool for the Unity development community.
+
+## Table of Contents
+
+- [Code of Conduct](#code-of-conduct)
+- [How Can I Contribute?](#how-can-i-contribute)
+  - [Reporting Bugs](#reporting-bugs)
+  - [Suggesting Features](#suggesting-features)
+  - [Pull Requests](#pull-requests)
+- [Development Setup](#development-setup)
+- [Coding Guidelines](#coding-guidelines)
+- [Commit Message Guidelines](#commit-message-guidelines)
+- [Project Structure](#project-structure)
+
+---
+
+## Code of Conduct
+
+This project and everyone participating in it is governed by our commitment to providing a welcoming and inspiring community for all. By participating, you are expected to uphold this code.
+
+**Be respectful, be constructive, be collaborative.**
+
+Examples of behavior that contributes to a positive environment:
+- Using welcoming and inclusive language
+- Being respectful of differing viewpoints and experiences
+- Gracefully accepting constructive criticism
+- Focusing on what is best for the community
+- Showing empathy towards other community members
+
+Examples of unacceptable behavior:
+- Trolling, insulting/derogatory comments, and personal or political attacks
+- Public or private harassment
+- Publishing others' private information without explicit permission
+- Other conduct which could reasonably be considered inappropriate in a professional setting
+
+---
+
+## How Can I Contribute?
+
+### Reporting Bugs
+
+Before creating bug reports, please check the [existing issues](https://github.com/your-username/open-unity/issues) to avoid duplicates.
+
+When creating a bug report, include as many details as possible:
+
+**Bug Report Template:**
+```markdown
+**Describe the bug**
+A clear and concise description of what the bug is.
+
+**To Reproduce**
+Steps to reproduce the behavior:
+1. Go to '...'
+2. Click on '...'
+3. See error
+
+**Expected behavior**
+What you expected to happen.
+
+**Screenshots**
+If applicable, add screenshots.
+
+**Environment:**
+- OS: [e.g., Windows 11, macOS 14.1, Ubuntu 22.04]
+- .NET Version: [e.g., 8.0.1]
+- Open Unity Version: [e.g., 0.1.0]
+- Unity Version: [e.g., 2022.3.10f1]
+
+**Additional context**
+Add any other context about the problem.
+```
+
+### Suggesting Features
+
+We love to hear about new ideas! Before creating feature suggestions, check [existing feature requests](https://github.com/your-username/open-unity/issues?q=is%3Aissue+label%3Aenhancement).
+
+**Feature Request Template:**
+```markdown
+**Is your feature request related to a problem?**
+A clear description of the problem. Ex. I'm always frustrated when [...]
+
+**Describe the solution you'd like**
+A clear and concise description of what you want to happen.
+
+**Describe alternatives you've considered**
+Other solutions or features you've considered.
+
+**Additional context**
+Screenshots, mockups, or examples.
+```
+
+### Pull Requests
+
+1. **Fork the repository** and create your branch from `main`
+2. **Follow the coding guidelines** (see below)
+3. **Test your changes** thoroughly
+4. **Update documentation** if needed
+5. **Submit a pull request**
+
+**Pull Request Checklist:**
+- [ ] Code follows the project's style guidelines
+- [ ] Self-review completed
+- [ ] Comments added to complex code sections
+- [ ] Documentation updated (if applicable)
+- [ ] No new warnings generated
+- [ ] Tests added/updated (if applicable)
+- [ ] All tests pass locally
+
+---
+
+## Development Setup
+
+### Prerequisites
+
+- [.NET 8.0 SDK](https://dotnet.microsoft.com/download) or later
+- IDE of your choice:
+  - [JetBrains Rider](https://www.jetbrains.com/rider/) (recommended)
+  - [Visual Studio 2022](https://visualstudio.microsoft.com/)
+  - [Visual Studio Code](https://code.visualstudio.com/) with C# extension
+
+### Setup Steps
+
+1. **Clone the repository**
+```bash
+   git clone https://github.com/your-username/open-unity.git
+   cd open-unity
+```
+
+2. **Install dependencies**
+```bash
+   dotnet restore
+```
+
+3. **Build the project**
+```bash
+   dotnet build
+```
+
+4. **Run the application**
+```bash
+   dotnet run --project src/OpenUnity.UI
+```
+
+### Running Tests
+```bash
+dotnet test
+```
+
+---
+
+## Coding Guidelines
+
+### C# Style Guide
+
+We follow standard C# coding conventions with some specific preferences:
+
+**Naming Conventions:**
+- `PascalCase` for class names, method names, properties, and public fields
+- `camelCase` for private fields, parameters, and local variables
+- Prefix private fields with underscore: `_myField`
+- Use descriptive names: `userRepository` not `ur`
+
+**Code Style:**
+```csharp
+// Good
+public class UnityProjectManager
+{
+    private readonly IProjectService _projectService;
+    
+    public async Task<Project> GetProjectAsync(string projectPath)
+    {
+        if (string.IsNullOrEmpty(projectPath))
+        {
+            throw new ArgumentException("Project path cannot be empty", nameof(projectPath));
+        }
+        
+        return await _projectService.LoadProjectAsync(projectPath);
+    }
+}
+
+// Avoid
+public class unity_project_manager
+{
+    IProjectService ps;
+    
+    public Task<Project> get(string p)
+    {
+        return ps.LoadProjectAsync(p);
+    }
+}
+```
+
+**General Principles:**
+- Keep methods short and focused (Single Responsibility Principle)
+- Use `async/await` for I/O operations
+- Dispose of resources properly (use `using` statements)
+- Avoid magic numbers - use named constants
+- Comment complex logic, but prefer self-documenting code
+
+**XAML Style:**
+```xml
+<!-- Good: Organized and readable -->
+<Button Classes="primary"
+        Content="Open Project"
+        Command="{Binding OpenProjectCommand}"
+        Margin="0,10,0,0" />
+
+<!-- Avoid: Cramped and hard to read -->
+<Button Classes="primary" Content="Open Project" Command="{Binding OpenProjectCommand}" Margin="0,10,0,0"/>
+```
+
+### File Organization
+```
+src/
+├── OpenUnity.Core/           # Business logic and services
+│   ├── Models/               # Data models
+│   ├── Services/             # Business services
+│   └── Interfaces/           # Abstraction interfaces
+├── OpenUnity.UI/             # Avalonia UI project
+│   ├── Views/                # XAML views
+│   ├── ViewModels/           # ViewModels (MVVM)
+│   ├── Controls/             # Custom controls
+│   └── Assets/               # Images, icons, etc.
+└── OpenUnity.Tests/          # Unit tests
+```
+
+---
+
+## Commit Message Guidelines
+
+We follow [Conventional Commits](https://www.conventionalcommits.org/) specification:
+
+**Format:**
+```
+<type>(<scope>): <subject>
+
+<body>
+
+<footer>
+```
+
+**Types:**
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation changes
+- `style`: Code style changes (formatting, no logic change)
+- `refactor`: Code refactoring
+- `perf`: Performance improvements
+- `test`: Adding or updating tests
+- `chore`: Maintenance tasks, dependencies
+
+**Examples:**
+```
+feat(project-manager): add quick launch functionality
+
+Implements one-click project and IDE launch from dashboard.
+Includes automatic IDE detection and preference saving.
+
+Closes #42
+```
+```
+fix(asset-processor): resolve texture conversion error
+
+Fixed issue where PNG to JPG conversion failed for images
+larger than 4096x4096 pixels.
+
+Fixes #87
+```
+```
+docs(readme): update installation instructions
+
+Added macOS-specific steps and troubleshooting section.
+```
+
+---
+
+## Project Structure
+```
+open-unity/
+├── .github/                  # GitHub-specific files
+│   ├── ISSUE_TEMPLATE/       # Issue templates
+│   └── workflows/            # CI/CD workflows
+├── docs/                     # Documentation
+├── src/                      # Source code
+│   ├── OpenUnity.Core/       # Core business logic
+│   ├── OpenUnity.UI/         # UI layer (Avalonia)
+│   └── OpenUnity.Tests/      # Unit tests
+├── assets/                   # Project assets (logos, screenshots)
+├── .gitignore
+├── CONTRIBUTING.md           # This file
+├── LICENSE                   # GPL-3.0 license
+└── README.md                 # Project readme
+```
+
+---
+
+## Getting Help
+
+- **Questions?** Open a [Discussion](https://github.com/your-username/open-unity/discussions)
+- **Bug or feature?** Open an [Issue](https://github.com/your-username/open-unity/issues)
+- **Want to chat?** Join our [Discord](https://discord.gg/your-link) *(coming soon)*
+
+---
+
+## Recognition
+
+Contributors will be recognized in:
+- GitHub contributors page
+- Release notes
+- README acknowledgments section
+
+---
+
+## License
+
+By contributing to Open Unity, you agree that your contributions will be licensed under the GNU General Public License v3.0.
+
+---
+
+**Thank you for contributing to Open Unity! 🚀**
+
+Together we're making Unity development more productive for everyone.
