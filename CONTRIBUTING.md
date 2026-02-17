@@ -1,6 +1,6 @@
-# Contributing to Open Unity
+# Contributing to Sew Own Game
 
-First off, thank you for considering contributing to Open Unity! It's people like you that make Open Unity such a great tool for the Unity development community.
+First off, thank you for considering contributing to Sew Own Game! It's people like you that make SOG such a great tool for the game development community.
 
 ## Table of Contents
 
@@ -8,6 +8,7 @@ First off, thank you for considering contributing to Open Unity! It's people lik
 - [How Can I Contribute?](#how-can-i-contribute)
   - [Reporting Bugs](#reporting-bugs)
   - [Suggesting Features](#suggesting-features)
+  - [Adding Engine Support](#adding-engine-support)
   - [Pull Requests](#pull-requests)
 - [Development Setup](#development-setup)
 - [Coding Guidelines](#coding-guidelines)
@@ -41,7 +42,7 @@ Examples of unacceptable behavior:
 
 ### Reporting Bugs
 
-Before creating bug reports, please check the [existing issues](https://github.com/your-username/open-unity/issues) to avoid duplicates.
+Before creating bug reports, please check the [existing issues](https://github.com/RagsProjects/sew-own-game/issues) to avoid duplicates.
 
 When creating a bug report, include as many details as possible:
 
@@ -65,8 +66,8 @@ If applicable, add screenshots.
 **Environment:**
 - OS: [e.g., Windows 11, macOS 14.1, Ubuntu 22.04]
 - .NET Version: [e.g., 8.0.1]
-- Open Unity Version: [e.g., 0.1.0]
-- Unity Version: [e.g., 2022.3.10f1]
+- SOG Version: [e.g., 0.1.0]
+- Game Engine: [e.g., Unity 2022.3.10f1, Unreal 5.3]
 
 **Additional context**
 Add any other context about the problem.
@@ -74,12 +75,15 @@ Add any other context about the problem.
 
 ### Suggesting Features
 
-We love to hear about new ideas! Before creating feature suggestions, check [existing feature requests](https://github.com/your-username/open-unity/issues?q=is%3Aissue+label%3Aenhancement).
+We love to hear about new ideas! Before creating feature suggestions, check [existing feature requests](https://github.com/RagsProjects/sew-own-game/issues?q=is%3Aissue+label%3Aenhancement).
 
 **Feature Request Template:**
 ```markdown
 **Is your feature request related to a problem?**
 A clear description of the problem. Ex. I'm always frustrated when [...]
+
+**Target Engine (if applicable)**
+Which game engine is this feature for? (Unity, Unreal, Godot, All, etc.)
 
 **Describe the solution you'd like**
 A clear and concise description of what you want to happen.
@@ -90,6 +94,47 @@ Other solutions or features you've considered.
 **Additional context**
 Screenshots, mockups, or examples.
 ```
+
+### Adding Engine Support
+
+We're actively looking to expand SOG to support multiple game engines! If you want to add support for a new engine:
+
+**Steps to Add Engine Support:**
+
+1. **Open a Discussion** first in [GitHub Discussions](https://github.com/RagsProjects/sew-own-game/discussions)
+   - Announce your intention to add support for [Engine Name]
+   - Discuss architecture and approach with maintainers
+   - Coordinate to avoid duplicate efforts
+
+2. **Research Engine Structure**
+   - Project file formats
+   - Configuration files
+   - Asset organization
+   - Build systems
+   - Common pain points for developers
+
+3. **Implement Core Features**
+   - Engine detection (installation paths, versions)
+   - Project detection and parsing
+   - Basic project management (open, backup, clean)
+   - Asset processing (if applicable)
+
+4. **Follow the Plugin Architecture**
+   - Create a new module under `src/SewOwnGame.Engines/[EngineName]/`
+   - Implement the `IEngineSupport` interface
+   - Add appropriate tests
+
+5. **Document Everything**
+   - Add engine-specific documentation
+   - Update README with new engine support
+   - Provide examples and screenshots
+
+**Priority Engines:**
+- 🔥 Unreal Engine
+- 🔥 Godot
+- 🔥 GameMaker Studio
+- 🔥 Defold
+- 🔥 Cocos2d-x
 
 ### Pull Requests
 
@@ -107,6 +152,7 @@ Screenshots, mockups, or examples.
 - [ ] No new warnings generated
 - [ ] Tests added/updated (if applicable)
 - [ ] All tests pass locally
+- [ ] Engine-specific changes tested with actual engine projects
 
 ---
 
@@ -119,13 +165,14 @@ Screenshots, mockups, or examples.
   - [JetBrains Rider](https://www.jetbrains.com/rider/) (recommended)
   - [Visual Studio 2022](https://visualstudio.microsoft.com/)
   - [Visual Studio Code](https://code.visualstudio.com/) with C# extension
+- At least one game engine installed for testing (Unity, Unreal, Godot, etc.)
 
 ### Setup Steps
 
 1. **Clone the repository**
 ```bash
-   git clone https://github.com/your-username/open-unity.git
-   cd open-unity
+   git clone https://github.com/RagsProjects/sew-own-game.git
+   cd sew-own-game
 ```
 
 2. **Install dependencies**
@@ -140,7 +187,7 @@ Screenshots, mockups, or examples.
 
 4. **Run the application**
 ```bash
-   dotnet run --project src/OpenUnity.UI
+   dotnet run --project src/SewOwnGame.UI
 ```
 
 ### Running Tests
@@ -160,12 +207,12 @@ We follow standard C# coding conventions with some specific preferences:
 - `PascalCase` for class names, method names, properties, and public fields
 - `camelCase` for private fields, parameters, and local variables
 - Prefix private fields with underscore: `_myField`
-- Use descriptive names: `userRepository` not `ur`
+- Use descriptive names: `projectRepository` not `pr`
 
 **Code Style:**
 ```csharp
 // Good
-public class UnityProjectManager
+public class ProjectManager
 {
     private readonly IProjectService _projectService;
     
@@ -181,7 +228,7 @@ public class UnityProjectManager
 }
 
 // Avoid
-public class unity_project_manager
+public class project_manager
 {
     IProjectService ps;
     
@@ -211,19 +258,53 @@ public class unity_project_manager
 <Button Classes="primary" Content="Open Project" Command="{Binding OpenProjectCommand}" Margin="0,10,0,0"/>
 ```
 
+### Engine Support Architecture
+
+When adding support for a new engine:
+```csharp
+// Implement the IEngineSupport interface
+public interface IEngineSupport
+{
+    string EngineName { get; }
+    string[] SupportedVersions { get; }
+    
+    Task<bool> IsEngineInstalledAsync();
+    Task<IEnumerable<string>> DetectProjectsAsync();
+    Task<Project> LoadProjectAsync(string path);
+    Task<bool> ValidateProjectAsync(string path);
+}
+
+// Example implementation
+public class UnrealEngineSupport : IEngineSupport
+{
+    public string EngineName => "Unreal Engine";
+    public string[] SupportedVersions => new[] { "5.0", "5.1", "5.2", "5.3" };
+    
+    // Implementation details...
+}
+```
+
 ### File Organization
 ```
 src/
-├── OpenUnity.Core/           # Business logic and services
-│   ├── Models/               # Data models
-│   ├── Services/             # Business services
-│   └── Interfaces/           # Abstraction interfaces
-├── OpenUnity.UI/             # Avalonia UI project
-│   ├── Views/                # XAML views
-│   ├── ViewModels/           # ViewModels (MVVM)
-│   ├── Controls/             # Custom controls
-│   └── Assets/               # Images, icons, etc.
-└── OpenUnity.Tests/          # Unit tests
+├── SewOwnGame.Core/           # Business logic and services
+│   ├── Models/                # Data models
+│   ├── Services/              # Business services
+│   └── Interfaces/            # Abstraction interfaces
+├── SewOwnGame.Engines/        # Engine-specific implementations
+│   ├── Unity/                 # Unity support
+│   ├── Unreal/                # Unreal support (future)
+│   ├── Godot/                 # Godot support (future)
+│   └── Common/                # Shared engine utilities
+├── SewOwnGame.UI/             # Avalonia UI project
+│   ├── Views/                 # XAML views
+│   ├── ViewModels/            # ViewModels (MVVM)
+│   ├── Controls/              # Custom controls
+│   └── Assets/                # Images, icons, etc.
+└── SewOwnGame.Tests/          # Unit tests
+    ├── Core.Tests/
+    ├── Engines.Tests/
+    └── Integration.Tests/
 ```
 
 ---
@@ -250,15 +331,32 @@ We follow [Conventional Commits](https://www.conventionalcommits.org/) specifica
 - `perf`: Performance improvements
 - `test`: Adding or updating tests
 - `chore`: Maintenance tasks, dependencies
+- `engine`: Engine-specific changes
+
+**Scopes (examples):**
+- `unity`: Unity-specific changes
+- `unreal`: Unreal-specific changes
+- `godot`: Godot-specific changes
+- `core`: Core functionality
+- `ui`: User interface
+- `git`: Git integration
 
 **Examples:**
 ```
-feat(project-manager): add quick launch functionality
+feat(unity): add quick launch functionality
 
 Implements one-click project and IDE launch from dashboard.
 Includes automatic IDE detection and preference saving.
 
 Closes #42
+```
+```
+engine(unreal): add initial Unreal Engine 5 support
+
+Implements project detection, parsing .uproject files,
+and basic project management features.
+
+Related to #15
 ```
 ```
 fix(asset-processor): resolve texture conversion error
@@ -268,25 +366,26 @@ larger than 4096x4096 pixels.
 
 Fixes #87
 ```
-```
-docs(readme): update installation instructions
-
-Added macOS-specific steps and troubleshooting section.
-```
 
 ---
 
 ## Project Structure
 ```
-open-unity/
+sew-own-game/
 ├── .github/                  # GitHub-specific files
 │   ├── ISSUE_TEMPLATE/       # Issue templates
 │   └── workflows/            # CI/CD workflows
 ├── docs/                     # Documentation
+│   ├── engines/              # Engine-specific docs
+│   │   ├── unity.md
+│   │   ├── unreal.md
+│   │   └── godot.md
+│   └── development/          # Development guides
 ├── src/                      # Source code
-│   ├── OpenUnity.Core/       # Core business logic
-│   ├── OpenUnity.UI/         # UI layer (Avalonia)
-│   └── OpenUnity.Tests/      # Unit tests
+│   ├── SewOwnGame.Core/      # Core business logic
+│   ├── SewOwnGame.Engines/   # Engine implementations
+│   ├── SewOwnGame.UI/        # UI layer (Avalonia)
+│   └── SewOwnGame.Tests/     # Unit tests
 ├── assets/                   # Project assets (logos, screenshots)
 ├── .gitignore
 ├── CONTRIBUTING.md           # This file
@@ -298,8 +397,9 @@ open-unity/
 
 ## Getting Help
 
-- **Questions?** Open a [Discussion](https://github.com/your-username/open-unity/discussions)
-- **Bug or feature?** Open an [Issue](https://github.com/your-username/open-unity/issues)
+- **Questions?** Open a [Discussion](https://github.com/RagsProjects/sew-own-game/discussions)
+- **Bug or feature?** Open an [Issue](https://github.com/RagsProjects/sew-own-game/issues)
+- **Want to add engine support?** Start a [Discussion](https://github.com/RagsProjects/sew-own-game/discussions) first!
 - **Want to chat?** Join our [Discord](https://discord.gg/your-link) *(coming soon)*
 
 ---
@@ -310,15 +410,16 @@ Contributors will be recognized in:
 - GitHub contributors page
 - Release notes
 - README acknowledgments section
+- Special recognition for engine support contributors
 
 ---
 
 ## License
 
-By contributing to Open Unity, you agree that your contributions will be licensed under the GNU General Public License v3.0.
+By contributing to Sew Own Game, you agree that your contributions will be licensed under the GNU General Public License v3.0.
 
 ---
 
-**Thank you for contributing to Open Unity! 🚀**
+**Thank you for contributing to Sew Own Game! 🪡🎮**
 
-Together we're making Unity development more productive for everyone.
+Together we're making game development more productive for everyone, across all engines!
