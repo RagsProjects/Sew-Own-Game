@@ -225,6 +225,7 @@ Found a bug? [Open an issue](https://github.com/RagsProjects/Sew-Own-Game/issues
 
 ---
 
-**Made with ❤️ for the game development community**
+**Made with ❤️ for the game development and open-source community**
 
 *Fine-tune your game, stitch by stitch* 🪡🎮
+
