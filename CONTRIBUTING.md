@@ -5,6 +5,7 @@ First off, thank you for considering contributing to Sew Own Game! It's people l
 ## Table of Contents
 
 - [Code of Conduct](#code-of-conduct)
+- [Branching Strategy](#branching-strategy)
 - [How Can I Contribute?](#how-can-i-contribute)
   - [Reporting Bugs](#reporting-bugs)
   - [Suggesting Features](#suggesting-features)
@@ -35,6 +36,23 @@ Examples of unacceptable behavior:
 - Public or private harassment
 - Publishing others' private information without explicit permission
 - Other conduct which could reasonably be considered inappropriate in a professional setting
+
+---
+
+## Branching Strategy
+To maintain project stability while allowing rapid development, we use the following branch structure:
+
+| Branch | Status | Description |
+| :--- | :--- | :--- |
+| **`main`** | **Stable** | Production-ready code. Only received merges from `nightly` after full validation. |
+| **`nightly`** | **Beta** | Pre-release testing. Used for integration tests and asset validation. |
+| **`dev`** | **Unstable** | Active development branch. All new features are merged here first. |
+
+### The Workflow:
+1. Create a `feature/` or `fix/` branch from **`dev`**.
+2. Merge your changes into **`dev`** for initial testing.
+3. Periodically, **`dev`** is merged into **`nightly`** for broader testing/beta users.
+4. Once **`nightly`** is confirmed stable, it is merged into **`main`** for official release.
 
 ---
 
@@ -134,25 +152,24 @@ We're actively looking to expand SOG to support multiple game engines! If you wa
 - 🔥 Godot
 - 🔥 GameMaker Studio
 - 🔥 Defold
-- 🔥 Cocos2d-x
+- 🔥 O3DE
+- 🔥 Stride
 
 ### Pull Requests
 
-1. **Fork the repository** and create your branch from `main`
-2. **Follow the coding guidelines** (see below)
-3. **Test your changes** thoroughly
-4. **Update documentation** if needed
-5. **Submit a pull request**
+1. **Fork the repository** and create your branch from **`dev`** (e.g., `feature/amazing-new-tool`).
+2. **Follow the coding guidelines** (see below).
+3. **Test your changes** thoroughly.
+4. **Update documentation** if needed.
+5. **Submit a Pull Request** targeting the **`dev`** branch.
 
 **Pull Request Checklist:**
-- [ ] Code follows the project's style guidelines
-- [ ] Self-review completed
-- [ ] Comments added to complex code sections
-- [ ] Documentation updated (if applicable)
-- [ ] No new warnings generated
-- [ ] Tests added/updated (if applicable)
-- [ ] All tests pass locally
-- [ ] Engine-specific changes tested with actual engine projects
+- [ ] Code follows the project's style guidelines.
+- [ ] Target branch is set to `dev`.
+- [ ] Self-review completed.
+- [ ] Comments added to complex code sections (especially in `App.axaml.cs` initialization).
+- [ ] Documentation updated (if applicable).
+- [ ] All tests pass locally.
 
 ---
 
@@ -165,6 +182,7 @@ We're actively looking to expand SOG to support multiple game engines! If you wa
   - [JetBrains Rider](https://www.jetbrains.com/rider/) (recommended)
   - [Visual Studio 2022](https://visualstudio.microsoft.com/)
   - [Visual Studio Code](https://code.visualstudio.com/) with C# extension
+  - [VSCodium](https://vscodium.com/)
 - At least one game engine installed for testing (Unity, Unreal, Godot, etc.)
 
 ### Setup Steps
@@ -172,20 +190,25 @@ We're actively looking to expand SOG to support multiple game engines! If you wa
 1. **Clone the repository**
 ```bash
    git clone https://github.com/RagsProjects/sew-own-game.git
-   cd sew-own-game
+   cd ./sew-own-game
 ```
 
-2. **Install dependencies**
+2. **Switch to dev**:
+```bash
+   git checkout dev
+```
+
+3. **Install dependencies**
 ```bash
    dotnet restore
 ```
 
-3. **Build the project**
+4. **Build the project**
 ```bash
    dotnet build
 ```
 
-4. **Run the application**
+5. **Run the application**
 ```bash
    dotnet run --project src/SewOwnGame.UI
 ```
@@ -194,6 +217,8 @@ We're actively looking to expand SOG to support multiple game engines! If you wa
 ```bash
 dotnet test
 ```
+
+> **Note for Devs**: In the 'dev' branch, the 'src/SewOwnGame.UI/SewOwnGame.UI.csproj' might be configured with ```<OutputType>Exe</OutputType>``` to allow console logging for easier debugging
 
 ---
 
