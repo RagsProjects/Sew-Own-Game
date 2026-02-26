@@ -153,6 +153,8 @@ If you have experience with any of these engines and would like to contribute, p
 - [ ] Unreal Engine support
 - [ ] Godot support
 - [ ] GameMaker Studio support
+- [ ] O3DE Game Engine support
+- [ ] Stride Game Engine support
 - [ ] Cross-engine project templates
 - [ ] Universal asset optimization tools
 
@@ -228,4 +230,5 @@ Found a bug? [Open an issue](https://github.com/RagsProjects/Sew-Own-Game/issues
 **Made with ❤️ for the game development and open-source community**
 
 *Fine-tune your game, stitch by stitch* 🪡🎮
+
 
