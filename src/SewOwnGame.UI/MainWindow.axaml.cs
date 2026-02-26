@@ -9,5 +9,10 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         DataContext = new MainWindowViewModel();
+
+        // Force window to appear on top
+        WindowStartupLocation = WindowStartupLocation.CenterScreen;
+        Topmost = true;
+        Topmost = false; // Remove topmost after appears
     }
 }

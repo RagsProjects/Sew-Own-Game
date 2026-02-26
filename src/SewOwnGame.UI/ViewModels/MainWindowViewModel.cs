@@ -25,7 +25,7 @@ public class MainWindowViewModel : ViewModelBase
     
     public MainWindowViewModel()
     {
-        _projectDetectionService = new UnityProjectDetectionService();
+        _projectDetectionService = new UniversalProjectDetectionService();
         Projects = new ObservableCollection<GameProject>();
         ScanProjectsCommand = ReactiveCommand.CreateFromTask(ScanProjectsAsync);
     }
