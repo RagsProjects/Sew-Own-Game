@@ -362,6 +362,9 @@ We follow [Conventional Commits](https://www.conventionalcommits.org/) specifica
 - `unity`: Unity-specific changes
 - `unreal`: Unreal-specific changes
 - `godot`: Godot-specific changes
+- `gamemaker`: Gamemaker-specific changes
+- `o3de`: O3DE-specific changes
+- `stride`: Stride-specific changes
 - `core`: Core functionality
 - `ui`: User interface
 - `git`: Git integration
