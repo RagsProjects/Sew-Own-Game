@@ -8,7 +8,7 @@ body:
       value: |
         Use this template for anything related to **O3DE (Open 3D Engine)** support in SOG.
         > ⚠️ O3DE support is currently **planned/in development**. Contributions are very welcome!
-        > Check [CONTRIBUTING.md](../../CONTRIBUTING.md) if you'd like to help add O3DE support.
+        > Check [CONTRIBUTING.md](https://github.com/RagsProjects/Sew-Own-Game/blob/main/CONTRIBUTING.md) if you'd like to help add O3DE support.
 
   - type: dropdown
     id: type
