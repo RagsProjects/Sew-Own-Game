@@ -1,7 +1,7 @@
 name: 💡 Suggestion
 description: Suggest a new feature, improvement, or idea for SOG
 title: "[Suggestion]: "
-labels: ["suggestion", "needs-triage"]
+labels: ["suggestion"]
 body:
   - type: markdown
     attributes:
