@@ -1,7 +1,7 @@
 name: 🗂️ Other
 description: For issues that don't fit any of the existing templates
 title: "[Other]: "
-labels: ["needs-triage"]
+labels: ["help wanted"]
 body:
   - type: markdown
     attributes:
