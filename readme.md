@@ -25,7 +25,7 @@ Game development often involves repetitive and time-consuming tasks that could b
 
 ### Current Focus & Future Plans
 
-**Currently**, SOG focuses on **Unity development**, as it's one of the most popular game engines. However, we plan to **expand support to other game engines** (Unreal Engine, Godot, GameMaker, etc.) in the future with the help of community contributors.
+**Currently**, SOG focuses on **Unity development**, as it's one of the most popular game engines. However, we plan to **expand support to other game engines** (Unreal Engine, Godot, GameMaker, etc.) in the future with the help of community contributors, since it will be a lot of work to test it in all game engines across all operational systems.
 
 If you're interested in adding support for other engines, we'd love your contribution! See our [Contributing Guidelines](CONTRIBUTING.md).
 
@@ -230,5 +230,6 @@ Found a bug? [Open an issue](https://github.com/RagsProjects/Sew-Own-Game/issues
 **Made with ❤️ for the game development and open-source community**
 
 *Fine-tune your game, stitch by stitch* 🪡🎮
+
 
 

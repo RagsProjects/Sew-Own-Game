@@ -1,0 +1,103 @@
+name: 💡 Suggestion
+description: Suggest a new feature, improvement, or idea for SOG
+title: "[Suggestion]: "
+labels: ["suggestion"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have an idea to make SOG better? We'd love to hear it!
+        Before submitting, please check if a [similar suggestion already exists](https://github.com/RagsProjects/Sew-Own-Game/issues?q=is%3Aissue+label%3Asuggestion).
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: 📂 Category
+      description: Which area of SOG does your suggestion relate to?
+      options:
+        - Project Management — Dashboard, scanning, organizing projects
+        - Productivity Tools — Code generators, templates, boilerplate
+        - Asset Processing — Textures, audio, models, sprite sheets
+        - Analysis & Optimization — Missing references, unused assets, reports
+        - Git Integration — LFS, .gitignore, version control helpers
+        - UI / UX — Interface, layout, accessibility, themes
+        - Engine Support — Adding or improving a specific engine
+        - Performance — Speed, memory usage, responsiveness
+        - Documentation — Guides, in-app help, tooltips
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: target_engine
+    attributes:
+      label: 🎮 Target Engine (if applicable)
+      description: Is this suggestion specific to a game engine?
+      options:
+        - Not engine-specific (applies to all)
+        - Unity
+        - Unreal Engine
+        - Godot
+        - GameMaker Studio
+        - O3DE
+        - Stride
+        - Other / New Engine
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: 😤 Is your suggestion related to a problem?
+      description: Describe the pain point or limitation that motivated this idea.
+      placeholder: "I'm always frustrated when I have to manually clean the Library folder in every Unity project one by one..."
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: ✨ Describe the Solution You'd Like
+      description: A clear description of what you want SOG to do.
+      placeholder: "A 'Batch Clean' button that clears Library/Temp folders across all detected projects at once, with a confirmation dialog showing the estimated space to be freed..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 🔄 Alternatives Considered
+      description: Any other approaches or workarounds you've thought about?
+      placeholder: "I currently use a shell script, but it would be much more accessible integrated directly into SOG..."
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 📊 How Important Is This to You?
+      options:
+        - Nice to have — Would improve my workflow slightly
+        - Useful — Would save me meaningful time regularly
+        - Important — I need this for my daily workflow
+        - Critical — This is blocking me from using SOG fully
+    validations:
+      required: true
+
+  - type: textarea
+    id: mockup
+    attributes:
+      label: 🎨 Mockups / Examples (optional)
+      description: Screenshots, sketches, links to similar tools, or any visual reference that helps illustrate your idea.
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: 📎 Additional Context
+      description: Anything else you'd like to add.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: ✔️ Checklist
+      options:
+        - label: I searched for existing suggestions before submitting
+          required: true
+        - label: This suggestion is about SOG itself, not a bug report
+          required: true

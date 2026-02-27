@@ -1,0 +1,115 @@
+name: 🎮 Unreal Engine — Engine Support
+description: Contribute to Unreal Engine integration
+title: "[Unreal]: "
+labels: ["unreal"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template for anything related to **Unreal Engine** support in SOG.
+        > ⚠️ Unreal Engine support is currently **planned/in development**. Contributions are very welcome!
+        > Check [CONTRIBUTING.md](https://github.com/RagsProjects/Sew-Own-Game/blob/main/CONTRIBUTING.md) if you'd like to help add Unreal support.
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: 📌 Issue Type
+      options:
+        - Bug — Something isn't working correctly
+        - Feature Request — Add or improve an Unreal-specific feature
+        - Contribution — I want to help implement Unreal support
+        - Improvement — Enhance existing Unreal support
+        - Question — I need help with Unreal integration
+    validations:
+      required: true
+
+  - type: input
+    id: unreal_version
+    attributes:
+      label: 🔢 Unreal Engine Version
+      placeholder: "e.g. 5.3, 5.4, 4.27"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: project_type
+    attributes:
+      label: 📦 Project Type
+      options:
+        - Blueprint Only
+        - C++ Project
+        - Mixed (Blueprint + C++)
+        - Not applicable
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: 🖥️ Operating System
+      options:
+        - Windows 11
+        - Windows 10
+        - macOS (Apple Silicon)
+        - macOS (Intel)
+        - Linux
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 📋 Description
+      description: Describe the bug, feature, or your contribution plan.
+      placeholder: |
+        **If bug:** SOG fails to detect .uproject files when...
+        **If feature:** SOG should support parsing .uproject metadata to...
+        **If contribution:** I'd like to implement project detection by scanning for .uproject files in...
+    validations:
+      required: true
+
+  - type: textarea
+    id: uproject_notes
+    attributes:
+      label: 📄 .uproject File Notes (optional)
+      description: Any relevant details about the project's `.uproject` structure or plugins being used.
+      placeholder: "Project uses Nanite, Lumen, and the following plugins..."
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 🔁 Steps to Reproduce (for bugs)
+      placeholder: |
+        1. Open SOG
+        2. ...
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: ✅ Expected Behavior
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: ❌ Actual Behavior (for bugs)
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: 📄 Logs / Error Output
+      render: shell
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: 📎 Additional Context
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: ✔️ Checklist
+      options:
+        - label: I searched for existing Unreal-related issues before submitting
+          required: true
+        - label: I am aware that Unreal support is still being developed
+          required: true
