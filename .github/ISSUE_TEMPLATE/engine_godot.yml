@@ -1,7 +1,7 @@
 name: 🎮 Godot — Engine Support
 description: Report a bug, request a feature, or contribute to Godot integration
 title: "[Godot]: "
-labels: ["engine: godot"]
+labels: ["godot"]
 body:
   - type: markdown
     attributes:
