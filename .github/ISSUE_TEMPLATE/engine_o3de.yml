@@ -1,7 +1,7 @@
 name: 🎮 O3DE — Engine Support
 description: Report a bug, request a feature, or contribute to O3DE integration
 title: "[O3DE]: "
-labels: ["engine: o3de"]
+labels: ["o3de"]
 body:
   - type: markdown
     attributes:
