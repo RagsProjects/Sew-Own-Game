@@ -10,9 +10,11 @@ body:
         A maintainer will review it and apply the appropriate labels.
 
         > 💡 Before continuing, make sure your issue doesn't fit one of the existing templates:
-        > - 🐛 **Bug?** → Use [Bug Report](./bug_report.yml)
-        > - 💡 **Feature idea?** → Use [Suggestion](./suggestion.yml)
+        > - 🐛 **Bug?** → Use the **Bug Report** template
+        > - 💡 **Feature idea?** → Use the **Suggestion** template
         > - 🎮 **Engine-specific?** → Use the matching engine template (Unity, Unreal, Godot, etc.)
+        >
+        > You can find all templates at the [new issue page](https://github.com/RagsProjects/Sew-Own-Game/issues/new/choose).
 
   - type: dropdown
     id: type
