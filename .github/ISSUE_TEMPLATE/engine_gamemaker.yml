@@ -1,7 +1,7 @@
 name: 🎮 GameMaker Studio — Engine Support
 description: Report a bug, request a feature, or contribute to GameMaker Studio integration
 title: "[GameMaker]: "
-labels: ["engine: gamemaker"]
+labels: ["gamemaker"]
 body:
   - type: markdown
     attributes:
