@@ -1,0 +1,113 @@
+name: 🎮 O3DE — Engine Support
+description: Report a bug, request a feature, or contribute to O3DE integration
+title: "[O3DE]: "
+labels: ["engine: o3de"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template for anything related to **O3DE (Open 3D Engine)** support in SOG.
+        > ⚠️ O3DE support is currently **planned/in development**. Contributions are very welcome!
+        > Check [CONTRIBUTING.md](../../CONTRIBUTING.md) if you'd like to help add O3DE support.
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: 📌 Issue Type
+      options:
+        - Bug — Something isn't working correctly
+        - Feature Request — Add or improve an O3DE-specific feature
+        - Contribution — I want to help implement O3DE support
+        - Improvement — Enhance existing O3DE support
+        - Question — I need help with O3DE integration
+    validations:
+      required: true
+
+  - type: input
+    id: o3de_version
+    attributes:
+      label: 🔢 O3DE Version
+      placeholder: "e.g. 23.10, 22.05"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: o3de_source
+    attributes:
+      label: 📦 O3DE Installation Source
+      options:
+        - O3DE Installer (official release)
+        - Built from source (GitHub)
+        - Not applicable
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: 🖥️ Operating System
+      options:
+        - Windows 11
+        - Windows 10
+        - Linux (Ubuntu)
+        - Linux (Other)
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 📋 Description
+      description: Describe the bug, feature, or your contribution plan.
+      placeholder: |
+        **If bug:** SOG fails to detect O3DE projects because it doesn't scan for project.json...
+        **If feature:** SOG should support reading O3DE's project.json to extract project metadata...
+        **If contribution:** I'd like to implement O3DE support by detecting project.json and o3de_manifest.json files...
+    validations:
+      required: true
+
+  - type: textarea
+    id: project_notes
+    attributes:
+      label: 📄 Project File Notes (optional)
+      description: Any relevant details about the O3DE project structure, gems used, or manifest files.
+      placeholder: "Project uses custom Gems and is registered in the O3DE manifest at ~/.o3de/o3de_manifest.json..."
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 🔁 Steps to Reproduce (for bugs)
+      placeholder: |
+        1. Open SOG
+        2. ...
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: ✅ Expected Behavior
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: ❌ Actual Behavior (for bugs)
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: 📄 Logs / Error Output
+      render: shell
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: 📎 Additional Context
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: ✔️ Checklist
+      options:
+        - label: I searched for existing O3DE-related issues before submitting
+          required: true
+        - label: I am aware that O3DE support is still being developed
+          required: true
