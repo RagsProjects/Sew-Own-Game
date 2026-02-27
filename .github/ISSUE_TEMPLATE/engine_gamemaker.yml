@@ -1,0 +1,112 @@
+name: 🎮 GameMaker Studio — Engine Support
+description: Report a bug, request a feature, or contribute to GameMaker Studio integration
+title: "[GameMaker]: "
+labels: ["engine: gamemaker"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template for anything related to **GameMaker Studio** support in SOG.
+        > ⚠️ GameMaker Studio support is currently **planned/in development**. Contributions are very welcome!
+        > Check [CONTRIBUTING.md](../../CONTRIBUTING.md) if you'd like to help add GameMaker support.
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: 📌 Issue Type
+      options:
+        - Bug — Something isn't working correctly
+        - Feature Request — Add or improve a GameMaker-specific feature
+        - Contribution — I want to help implement GameMaker support
+        - Improvement — Enhance existing GameMaker support
+        - Question — I need help with GameMaker integration
+    validations:
+      required: true
+
+  - type: dropdown
+    id: gms_version
+    attributes:
+      label: 🔢 GameMaker Studio Version
+      options:
+        - GameMaker Studio 2 (Subscription / 2022+)
+        - GameMaker Studio 2 (Perpetual / pre-2022)
+        - GameMaker Studio 1.4
+        - GameMaker (Legacy, pre-Studio)
+    validations:
+      required: true
+
+  - type: input
+    id: gms_version_exact
+    attributes:
+      label: Exact GameMaker Version
+      placeholder: "e.g. 2024.2.0, 2023.11"
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: 🖥️ Operating System
+      options:
+        - Windows 11
+        - Windows 10
+        - macOS (Apple Silicon)
+        - macOS (Intel)
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 📋 Description
+      description: Describe the bug, feature, or your contribution plan.
+      placeholder: |
+        **If bug:** SOG doesn't detect GameMaker projects because .yyp files are not scanned...
+        **If feature:** SOG should read .yyp project files to extract project metadata...
+        **If contribution:** I'd like to implement GameMaker support by detecting .yyp files in common install directories...
+    validations:
+      required: true
+
+  - type: textarea
+    id: yyp_notes
+    attributes:
+      label: 📄 .yyp Project File Notes (optional)
+      description: Any relevant details about the `.yyp` project structure or assets.
+      placeholder: "Project uses GameMaker's built-in asset pipeline and targets Windows + HTML5..."
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 🔁 Steps to Reproduce (for bugs)
+      placeholder: |
+        1. Open SOG
+        2. ...
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: ✅ Expected Behavior
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: ❌ Actual Behavior (for bugs)
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: 📄 Logs / Error Output
+      render: shell
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: 📎 Additional Context
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: ✔️ Checklist
+      options:
+        - label: I searched for existing GameMaker-related issues before submitting
+          required: true
+        - label: I am aware that GameMaker support is still being developed
+          required: true
