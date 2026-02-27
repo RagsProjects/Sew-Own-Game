@@ -8,7 +8,7 @@ body:
       value: |
         Use this template for anything related to **Stride Game Engine** support in SOG.
         > ⚠️ Stride support is currently **planned/in development**. Contributions are very welcome!
-        > Check [CONTRIBUTING.md](../../CONTRIBUTING.md) if you'd like to help add Stride support.
+        > Check [CONTRIBUTING.md](https://github.com/RagsProjects/Sew-Own-Game/blob/main/CONTRIBUTING.md) if you'd like to help add Stride support.
 
   - type: dropdown
     id: type
