@@ -1,5 +1,5 @@
 name: 🎮 Unreal Engine — Engine Support
-description: Report a bug, request a feature, or contribute to Unreal Engine integration
+description: Contribute to Unreal Engine integration
 title: "[Unreal]: "
 labels: ["engine: unreal"]
 body:
@@ -8,7 +8,7 @@ body:
       value: |
         Use this template for anything related to **Unreal Engine** support in SOG.
         > ⚠️ Unreal Engine support is currently **planned/in development**. Contributions are very welcome!
-        > Check [CONTRIBUTING.md](../../CONTRIBUTING.md) if you'd like to help add Unreal support.
+        > Check [CONTRIBUTING.md](https://github.com/RagsProjects/Sew-Own-Game/blob/main/CONTRIBUTING.md) if you'd like to help add Unreal support.
 
   - type: dropdown
     id: type
