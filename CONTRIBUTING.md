@@ -148,10 +148,10 @@ We're actively looking to expand SOG to support multiple game engines! If you wa
    - Provide examples and screenshots
 
 **Priority Engines:**
+- 🔥 Unity Engine
 - 🔥 Unreal Engine
 - 🔥 Godot
 - 🔥 GameMaker Studio
-- 🔥 Defold
 - 🔥 O3DE
 - 🔥 Stride
 
@@ -320,6 +320,8 @@ src/
 │   ├── Unity/                 # Unity support
 │   ├── Unreal/                # Unreal support (future)
 │   ├── Godot/                 # Godot support (future)
+|   ├── O3DE/                  # O3DE support (future)
+|   ├── Stride/                # Stride support (future)
 │   └── Common/                # Shared engine utilities
 ├── SewOwnGame.UI/             # Avalonia UI project
 │   ├── Views/                 # XAML views
@@ -351,6 +353,7 @@ We follow [Conventional Commits](https://www.conventionalcommits.org/) specifica
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation changes
+- `git`: Github repo changes (.github, .gitkeep, etc)
 - `style`: Code style changes (formatting, no logic change)
 - `refactor`: Code refactoring
 - `perf`: Performance improvements
