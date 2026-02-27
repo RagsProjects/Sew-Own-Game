@@ -9,6 +9,11 @@ body:
         Thanks for taking the time to report a bug! Please fill out the form below as completely as possible.
         Before submitting, check if a [similar issue already exists](https://github.com/RagsProjects/Sew-Own-Game/issues).
 
+        > ⚠️ This template is for **UI and software bugs only** (crashes, layout issues, unexpected behavior in SOG itself).
+        > If your bug is related to a specific game engine integration, please use the matching engine template instead:
+        > Unity · Unreal Engine · Godot · GameMaker Studio · O3DE · Stride
+        > You can find all templates at the [new issue page](https://github.com/RagsProjects/Sew-Own-Game/issues/new/choose).
+
   - type: textarea
     id: description
     attributes:
@@ -83,29 +88,6 @@ body:
     validations:
       required: true
 
-  - type: dropdown
-    id: engine
-    attributes:
-      label: 🎮 Related Game Engine (if applicable)
-      description: Is the bug related to a specific engine integration?
-      options:
-        - Not engine-specific
-        - Unity
-        - Unreal Engine
-        - Godot
-        - GameMaker Studio
-        - O3DE
-        - Stride
-        - Other
-    validations:
-      required: true
-
-  - type: input
-    id: engine_version
-    attributes:
-      label: 🔢 Engine Version (if applicable)
-      placeholder: "e.g. Unity 2022.3.10f1"
-
   - type: textarea
     id: logs
     attributes:
@@ -131,6 +113,8 @@ body:
       label: ✔️ Checklist
       options:
         - label: I searched for existing issues before submitting
+          required: true
+        - label: My bug is not engine-specific and is a UI/Software bug
           required: true
         - label: I am using the latest version of SOG
           required: false
