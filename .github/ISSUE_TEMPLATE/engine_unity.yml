@@ -1,7 +1,7 @@
 name: 🎮 Unity — Engine Support
 description: Report a bug, request a feature, or suggest improvements related to Unity integration
 title: "[Unity]: "
-labels: ["engine: unity"]
+labels: ["unity"]
 body:
   - type: markdown
     attributes:
