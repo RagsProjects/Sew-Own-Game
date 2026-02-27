@@ -1,0 +1,138 @@
+name: 🐛 Bug Report
+description: Report a bug or unexpected behavior in SOG
+title: "[Bug]: "
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug! Please fill out the form below as completely as possible.
+        Before submitting, check if a [similar issue already exists](https://github.com/RagsProjects/Sew-Own-Game/issues).
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 📋 Describe the Bug
+      description: A clear and concise description of what the bug is.
+      placeholder: "When I click on 'Scan for Projects', the application crashes with..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 🔁 Steps to Reproduce
+      description: Step-by-step instructions to reproduce the behavior.
+      placeholder: |
+        1. Open SOG
+        2. Click on '...'
+        3. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: ✅ Expected Behavior
+      description: What did you expect to happen?
+      placeholder: "The application should have..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: ❌ Actual Behavior
+      description: What actually happened?
+      placeholder: "Instead, the application..."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: 🖥️ Operating System
+      options:
+        - Windows 11
+        - Windows 10
+        - Windows 7/8
+        - macOS (Apple Silicon)
+        - macOS (Intel)
+        - Ubuntu / Debian
+        - Fedora / RHEL
+        - Arch Linux
+        - Other Linux
+    validations:
+      required: true
+
+  - type: input
+    id: dotnet_version
+    attributes:
+      label: 🔷 .NET Version
+      description: Run `dotnet --version` to find out.
+      placeholder: "e.g. 8.0.1"
+    validations:
+      required: true
+
+  - type: input
+    id: sog_version
+    attributes:
+      label: 🪡 SOG Version
+      description: Found in the application title bar or About section.
+      placeholder: "e.g. 0.1.0"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: engine
+    attributes:
+      label: 🎮 Related Game Engine (if applicable)
+      description: Is the bug related to a specific engine integration?
+      options:
+        - Not engine-specific
+        - Unity
+        - Unreal Engine
+        - Godot
+        - GameMaker Studio
+        - O3DE
+        - Stride
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: engine_version
+    attributes:
+      label: 🔢 Engine Version (if applicable)
+      placeholder: "e.g. Unity 2022.3.10f1"
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: 📄 Logs / Error Output
+      description: Paste any relevant console output or error messages here.
+      render: shell
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: 📸 Screenshots
+      description: If applicable, add screenshots to help explain the problem.
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: 📎 Additional Context
+      description: Any other information that might help us fix the bug.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: ✔️ Checklist
+      options:
+        - label: I searched for existing issues before submitting
+          required: true
+        - label: I am using the latest version of SOG
+          required: false
+        - label: I can consistently reproduce this bug
+          required: false
