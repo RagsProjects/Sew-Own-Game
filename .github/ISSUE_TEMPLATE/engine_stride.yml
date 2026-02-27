@@ -1,0 +1,112 @@
+name: 🎮 Stride — Engine Support
+description: Report a bug, request a feature, or contribute to Stride Game Engine integration
+title: "[Stride]: "
+labels: ["engine: stride"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template for anything related to **Stride Game Engine** support in SOG.
+        > ⚠️ Stride support is currently **planned/in development**. Contributions are very welcome!
+        > Check [CONTRIBUTING.md](../../CONTRIBUTING.md) if you'd like to help add Stride support.
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: 📌 Issue Type
+      options:
+        - Bug — Something isn't working correctly
+        - Feature Request — Add or improve a Stride-specific feature
+        - Contribution — I want to help implement Stride support
+        - Improvement — Enhance existing Stride support
+        - Question — I need help with Stride integration
+    validations:
+      required: true
+
+  - type: input
+    id: stride_version
+    attributes:
+      label: 🔢 Stride Version
+      placeholder: "e.g. 4.2, 4.1"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: scripting_language
+    attributes:
+      label: 📝 Scripting Language
+      options:
+        - C# (.NET 6+)
+        - C# (.NET Framework)
+        - Not applicable
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: 🖥️ Operating System
+      options:
+        - Windows 11
+        - Windows 10
+        - Linux
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 📋 Description
+      description: Describe the bug, feature, or your contribution plan.
+      placeholder: |
+        **If bug:** SOG doesn't detect Stride projects because .sdpkg files are not recognized...
+        **If feature:** SOG should read .sdpkg files to extract project name, version, and asset references...
+        **If contribution:** I'd like to implement Stride support by scanning for .sdpkg files and parsing their XML structure...
+    validations:
+      required: true
+
+  - type: textarea
+    id: sdpkg_notes
+    attributes:
+      label: 📄 .sdpkg File Notes (optional)
+      description: Any relevant details about the project's `.sdpkg` structure or package configuration.
+      placeholder: "Project uses Stride's built-in physics and the .sdpkg references several external NuGet packages..."
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 🔁 Steps to Reproduce (for bugs)
+      placeholder: |
+        1. Open SOG
+        2. ...
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: ✅ Expected Behavior
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: ❌ Actual Behavior (for bugs)
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: 📄 Logs / Error Output
+      render: shell
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: 📎 Additional Context
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: ✔️ Checklist
+      options:
+        - label: I searched for existing Stride-related issues before submitting
+          required: true
+        - label: I am aware that Stride support is still being developed
+          required: true
