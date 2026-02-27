@@ -1,7 +1,7 @@
 name: 🎮 Stride — Engine Support
 description: Report a bug, request a feature, or contribute to Stride Game Engine integration
 title: "[Stride]: "
-labels: ["engine: stride"]
+labels: ["stride"]
 body:
   - type: markdown
     attributes:
