@@ -1,7 +1,7 @@
 name: 🎮 Unreal Engine — Engine Support
 description: Contribute to Unreal Engine integration
 title: "[Unreal]: "
-labels: ["engine: unreal"]
+labels: ["unreal"]
 body:
   - type: markdown
     attributes:
