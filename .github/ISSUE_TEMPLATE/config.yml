@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 GitHub Discussions
+    url: https://github.com/RagsProjects/Sew-Own-Game/discussions
+    about: Have a question or want to discuss a feature idea? Start a discussion!
+  - name: 🤝 Adding Engine Support
+    url: https://github.com/RagsProjects/Sew-Own-Game/discussions
+    about: Want to contribute support for a new engine? Open a discussion first to coordinate with maintainers.
+  - name: 📖 Contributing Guidelines
+    url: https://github.com/RagsProjects/Sew-Own-Game/blob/main/CONTRIBUTING.md
+    about: Read our contributing guide before submitting.

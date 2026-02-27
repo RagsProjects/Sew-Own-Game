@@ -8,8 +8,11 @@
 - Put another change here
 - And so on...
 
-### ✅ Checklist
-- [x] Code tested and functional in `main`.
-- [x] Checked for pending conflicts.
-
+### ✅ **Pull Request Checklist:**
+- [ ] Code follows the project's style guidelines.
+- [ ] Target branch is set to `dev`.
+- [ ] Self-review completed.
+- [ ] Comments added to complex code sections (especially in `App.axaml.cs` initialization).
+- [ ] Documentation updated (if applicable).
+- [ ] All tests pass locally.
 ---

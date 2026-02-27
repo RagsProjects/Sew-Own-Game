@@ -1,0 +1,69 @@
+name: 🗂️ Other
+description: For issues that don't fit any of the existing templates
+title: "[Other]: "
+labels: ["help wanted"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Couldn't find a template that fits your issue? No problem — use this one.
+        A maintainer will review it and apply the appropriate labels.
+
+        > 💡 Before continuing, make sure your issue doesn't fit one of the existing templates:
+        > - 🐛 **Bug?** → Use the **Bug Report** template
+        > - 💡 **Feature idea?** → Use the **Suggestion** template
+        > - 🎮 **Engine-specific?** → Use the matching engine template (Unity, Unreal, Godot, etc.)
+        >
+        > You can find all templates at the [new issue page](https://github.com/RagsProjects/Sew-Own-Game/issues/new/choose).
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: 📌 What best describes your issue?
+      options:
+        - Question — I need help understanding something
+        - Documentation — Something in the docs is wrong, missing, or unclear
+        - Security — I found a potential security vulnerability (consider reporting privately instead)
+        - Compatibility — SOG doesn't work well with a specific setup or environment
+        - Dependency — Issue related to a third-party library or package
+        - CI / Build — Problem with the build pipeline or test infrastructure
+        - Meta — About the project itself (governance, licensing, repo structure)
+        - Something else entirely
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 📋 Describe Your Issue
+      description: Explain as clearly as possible what you're reporting or asking about.
+      placeholder: "I noticed that the README mentions X, but when I try to do Y..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: 📎 Additional Context
+      description: Environment details, screenshots, links, or anything else that might help.
+      placeholder: |
+        - OS: Windows 11
+        - .NET: 8.0.3
+        - SOG Version: 0.1.0
+        - Other relevant info...
+
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: 💬 Do You Have a Proposed Solution? (optional)
+      description: If you already have an idea for how to address this, share it here.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: ✔️ Checklist
+      options:
+        - label: I confirmed this doesn't fit any of the existing templates
+          required: true
+        - label: I searched for existing issues before submitting
+          required: true

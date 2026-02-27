@@ -93,7 +93,7 @@ Add any other context about the problem.
 
 ### Suggesting Features
 
-We love to hear about new ideas! Before creating feature suggestions, check [existing feature requests](https://github.com/RagsProjects/sew-own-game/issues?q=is%3Aissue+label%3Aenhancement).
+We love to hear about new ideas! Before creating feature suggestions, check [existing feature requests](https://github.com/RagsProjects/sew-own-game/issues?q=is%3Aissue+label%3Asuggestion).
 
 **Feature Request Template:**
 ```markdown
@@ -138,9 +138,10 @@ We're actively looking to expand SOG to support multiple game engines! If you wa
    - Asset processing (if applicable)
 
 4. **Follow the Plugin Architecture**
-   - Create a new module under `src/SewOwnGame.Engines/[EngineName]/`
+   - Create a new engine support class under `src/SewOwnGame.Core/Services/`
    - Implement the `IEngineSupport` interface
-   - Add appropriate tests
+   - Register the new engine in `EngineManager`
+   - Add appropriate tests under `src/SewOwnGame.Tests/`
 
 5. **Document Everything**
    - Add engine-specific documentation
@@ -148,10 +149,10 @@ We're actively looking to expand SOG to support multiple game engines! If you wa
    - Provide examples and screenshots
 
 **Priority Engines:**
+- 🔥 Unity Engine
 - 🔥 Unreal Engine
 - 🔥 Godot
 - 🔥 GameMaker Studio
-- 🔥 Defold
 - 🔥 O3DE
 - 🔥 Stride
 
@@ -285,51 +286,79 @@ public class project_manager
 
 ### Engine Support Architecture
 
-When adding support for a new engine:
+When adding support for a new engine, implement the `IEngineSupport` interface located at `src/SewOwnGame.Core/Interfaces/IEngineSupport.cs`:
+
 ```csharp
-// Implement the IEngineSupport interface
 public interface IEngineSupport
 {
+    /// <summary>
+    /// Game engine name (e.g. "Unity", "Unreal Engine")
+    /// </summary>
     string EngineName { get; }
-    string[] SupportedVersions { get; }
-    
-    Task<bool> IsEngineInstalledAsync();
-    Task<IEnumerable<string>> DetectProjectsAsync();
-    Task<Project> LoadProjectAsync(string path);
-    Task<bool> ValidateProjectAsync(string path);
-}
 
-// Example implementation
-public class UnrealEngineSupport : IEngineSupport
-{
-    public string EngineName => "Unreal Engine";
-    public string[] SupportedVersions => new[] { "5.0", "5.1", "5.2", "5.3" };
-    
-    // Implementation details...
+    /// <summary>
+    /// Engine type enum value
+    /// </summary>
+    EngineType EngineType { get; }
+
+    /// <summary>
+    /// Common paths where projects of this engine are typically stored
+    /// </summary>
+    string[] CommonProjectPaths { get; }
+
+    /// <summary>
+    /// Returns true if the given path is a valid project for this engine
+    /// </summary>
+    Task<bool> IsValidProjectAsync(string path);
+
+    /// <summary>
+    /// Loads and returns full project details from the given path
+    /// </summary>
+    Task<GameProject?> LoadProjectAsync(string path);
+
+    /// <summary>
+    /// Detects and returns the engine version used by the project at the given path
+    /// </summary>
+    string DetectEngineVersion(string projectPath);
 }
 ```
+
+After implementing the interface, register your engine in `EngineManager` (`src/SewOwnGame.Core/Services/EngineManager.cs`):
+
+```csharp
+public EngineManager()
+{
+    _engines = new List<IEngineSupport>
+    {
+        new UnityEngineSupport(),
+        new UnrealEngineSupport(), // your new engine here
+    };
+}
+```
+
+Don't forget to add the corresponding value to the `EngineType` enum at `src/SewOwnGame.Core/Enums/EngineType.cs`.
 
 ### File Organization
 ```
 src/
 ├── SewOwnGame.Core/           # Business logic and services
-│   ├── Models/                # Data models
-│   ├── Services/              # Business services
-│   └── Interfaces/            # Abstraction interfaces
-├── SewOwnGame.Engines/        # Engine-specific implementations
-│   ├── Unity/                 # Unity support
-│   ├── Unreal/                # Unreal support (future)
-│   ├── Godot/                 # Godot support (future)
-│   └── Common/                # Shared engine utilities
+│   ├── Enums/                 # Enumerations (EngineType, etc.)
+│   ├── Interfaces/            # Abstraction interfaces (IEngineSupport, IProjectDetectionService)
+│   ├── Models/                # Data models (GameProject, etc.)
+│   └── Services/              # Business services and engine implementations
+│       ├── EngineManager.cs             # Registers and manages all engines
+│       ├── UniversalProjectDetectionService.cs
+│       ├── UnityEngineSupport.cs        # Unity implementation
+│       ├── UnrealEngineSupport.cs       # Unreal implementation (future)
+│       ├── GodotEngineSupport.cs        # Godot implementation (future)
+│       └── ...                          # Other engines (future)
 ├── SewOwnGame.UI/             # Avalonia UI project
-│   ├── Views/                 # XAML views
+│   ├── Assets/                # Images, icons, etc.
 │   ├── ViewModels/            # ViewModels (MVVM)
-│   ├── Controls/              # Custom controls
-│   └── Assets/                # Images, icons, etc.
-└── SewOwnGame.Tests/          # Unit tests
-    ├── Core.Tests/
-    ├── Engines.Tests/
-    └── Integration.Tests/
+│   ├── Views/                 # XAML views (future)
+│   ├── App.axaml / App.axaml.cs
+│   └── MainWindow.axaml / MainWindow.axaml.cs
+└── SewOwnGame.Tests/          # Unit and integration tests
 ```
 
 ---
@@ -351,6 +380,7 @@ We follow [Conventional Commits](https://www.conventionalcommits.org/) specifica
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation changes
+- `git`: Github repo changes (.github, .gitkeep, etc)
 - `style`: Code style changes (formatting, no logic change)
 - `refactor`: Code refactoring
 - `perf`: Performance improvements
@@ -410,8 +440,7 @@ sew-own-game/
 │   │   └── godot.md
 │   └── development/          # Development guides
 ├── src/                      # Source code
-│   ├── SewOwnGame.Core/      # Core business logic
-│   ├── SewOwnGame.Engines/   # Engine implementations
+│   ├── SewOwnGame.Core/      # Core business logic and engine implementations
 │   ├── SewOwnGame.UI/        # UI layer (Avalonia)
 │   └── SewOwnGame.Tests/     # Unit tests
 ├── assets/                   # Project assets (logos, screenshots)
