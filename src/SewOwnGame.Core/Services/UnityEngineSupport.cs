@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using SewOwnGame.Core.Enums;
 using SewOwnGame.Core.Interfaces;
 using SewOwnGame.Core.Models;
@@ -9,13 +10,45 @@ public class UnityEngineSupport : IEngineSupport
     public string EngineName => "Unity";
     public EngineType EngineType => EngineType.Unity;
     
-    public string[] CommonProjectPaths => new[]
+    public string[] CommonProjectPaths
     {
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Unity Projects"),
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Projects"),
-        @"C:\Projects",
-        @"D:\Projects"
-    };
+        get
+        {
+            var paths = new List<string>();
+            
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                // Windows
+                paths.Add(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Unity Projects"));
+                paths.Add(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Projects"));
+                paths.Add(@"C:\Projects");
+                paths.Add(@"D:\Projects");
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                // Linux
+                var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                // Linux include variations on different languages
+                paths.Add(Path.Combine(home, "Documents", "Unity Projects"));
+                paths.Add(Path.Combine(home, "Documentos", "Unity Projects")); // Portugues
+                paths.Add(Path.Combine(home, "Projects"));
+                paths.Add(Path.Combine(home, "UnityProjects"));
+                paths.Add(Path.Combine(home, "projects"));
+                paths.Add(Path.Combine(home, "unity-projects"));
+                paths.Add(Path.Combine(home));
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                // macOS
+                var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                paths.Add(Path.Combine(home, "Documents", "Unity Projects"));
+                paths.Add(Path.Combine(home, "Projects"));
+                paths.Add(Path.Combine(home, "UnityProjects"));
+            }
+            
+            return paths.ToArray();
+        }
+    }
     
     public async Task<bool> IsValidProjectAsync(string path)
     {
@@ -96,8 +129,7 @@ public class UnityEngineSupport : IEngineSupport
         }
         catch (UnauthorizedAccessException)
         {
-            // Ignore folders with no permissions
-            // Implement warning message for UI later...
+            // Ignore folder with not enough permissions
         }
         
         return size;

@@ -1,7 +1,8 @@
+using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using ReactiveUI;
+using Avalonia.Threading;
 using SewOwnGame.Core.Interfaces;
 using SewOwnGame.Core.Models;
 using SewOwnGame.Core.Services;
@@ -18,7 +19,14 @@ public class MainWindowViewModel : ViewModelBase
     public bool IsLoading
     {
         get => _isLoading;
-        set => this.RaiseAndSetIfChanged(ref _isLoading, value);
+        set
+        {
+            if (_isLoading != value)
+            {
+                _isLoading = value;
+                OnPropertyChanged(nameof(IsLoading));
+            }
+        }
     }
     
     public ICommand ScanProjectsCommand { get; }
@@ -27,7 +35,7 @@ public class MainWindowViewModel : ViewModelBase
     {
         _projectDetectionService = new UniversalProjectDetectionService();
         Projects = new ObservableCollection<GameProject>();
-        ScanProjectsCommand = ReactiveCommand.CreateFromTask(ScanProjectsAsync);
+        ScanProjectsCommand = new AsyncCommand(ScanProjectsAsync);
     }
     
     private async Task ScanProjectsAsync()
@@ -37,7 +45,8 @@ public class MainWindowViewModel : ViewModelBase
         
         try
         {
-            var detectedProjects = await _projectDetectionService.DetectProjectsAsync();
+            var detectedProjects = await Task.Run(async () => 
+                await _projectDetectionService.DetectProjectsAsync());
             
             foreach (var project in detectedProjects)
             {
@@ -47,6 +56,39 @@ public class MainWindowViewModel : ViewModelBase
         finally
         {
             IsLoading = false;
+        }
+    }
+}
+
+public class AsyncCommand : ICommand
+{
+    private readonly Func<Task> _execute;
+    private bool _isExecuting;
+    
+    public event EventHandler? CanExecuteChanged;
+    
+    public AsyncCommand(Func<Task> execute)
+    {
+        _execute = execute;
+    }
+    
+    public bool CanExecute(object? parameter) => !_isExecuting;
+    
+    public async void Execute(object? parameter)
+    {
+        if (_isExecuting) return;
+        
+        _isExecuting = true;
+        CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+        
+        try
+        {
+            await _execute();
+        }
+        finally
+        {
+            _isExecuting = false;
+            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 }
