@@ -1,0 +1,120 @@
+name: 🎮 Unity — Engine Support
+description: Report a bug, request a feature, or suggest improvements related to Unity integration
+title: "[Unity]: "
+labels: ["engine: unity"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template for anything related to **Unity Engine** support in SOG.
+        For general bugs unrelated to Unity, please use the [Bug Report](./bug_report.yml) template instead.
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: 📌 Issue Type
+      options:
+        - Bug — Something isn't working correctly
+        - Feature Request — Add or improve a Unity-specific feature
+        - Improvement — Enhance existing Unity support
+        - Question — I need help with Unity integration
+    validations:
+      required: true
+
+  - type: input
+    id: unity_version
+    attributes:
+      label: 🔢 Unity Version
+      description: The version of Unity where the issue occurs.
+      placeholder: "e.g. 2022.3.10f1, 6000.0.0f1"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: unity_pipeline
+    attributes:
+      label: 🎨 Render Pipeline
+      options:
+        - Built-in Render Pipeline
+        - Universal Render Pipeline (URP)
+        - High Definition Render Pipeline (HDRP)
+        - Custom / Other
+        - Not applicable
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: 🖥️ Operating System
+      options:
+        - Windows 11
+        - Windows 10
+        - macOS (Apple Silicon)
+        - macOS (Intel)
+        - Linux
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 📋 Description
+      description: Describe the bug, feature request, or improvement in detail.
+      placeholder: |
+        **If bug:** When SOG scans for Unity projects, it fails to detect projects located in...
+        **If feature:** SOG should be able to...
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 🔁 Steps to Reproduce (for bugs)
+      description: How can we reproduce the issue?
+      placeholder: |
+        1. Open SOG
+        2. Click 'Scan for Projects'
+        3. ...
+        4. See error
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: ✅ Expected Behavior
+      placeholder: "SOG should detect all Unity projects in ~/Documents/Unity Projects"
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: ❌ Actual Behavior (for bugs)
+      placeholder: "Only 2 out of 5 projects were detected"
+
+  - type: input
+    id: project_structure
+    attributes:
+      label: 📁 Project Structure Notes (optional)
+      description: Any relevant details about the Unity project structure (e.g., custom folder layout, symlinks, network drive).
+      placeholder: "Projects are stored on a network drive mapped as Z:\\"
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: 📄 Logs / Error Output
+      render: shell
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: 📎 Additional Context
+      description: Mockups, links to Unity docs, or any other relevant information.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: ✔️ Checklist
+      options:
+        - label: I searched for existing Unity-related issues before submitting
+          required: true
+        - label: I confirmed this is specific to Unity integration (not a general SOG bug)
+          required: true
