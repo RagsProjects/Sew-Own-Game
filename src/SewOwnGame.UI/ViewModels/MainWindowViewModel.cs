@@ -18,6 +18,8 @@ public class MainWindowViewModel : ViewModelBase
     private bool _isLoading;
     
     public ObservableCollection<GameProject> Projects { get; }
+    public bool IsEmpty => !_isLoading && Projects.Count == 0;
+    public bool HasProjects => !_isLoading && Projects.Count > 0;
     public ICommand ScanProjectsCommand { get; }
     public ICommand ImportProjectCommand { get; }
     
@@ -30,6 +32,8 @@ public class MainWindowViewModel : ViewModelBase
             {
                 _isLoading = value;
                 OnPropertyChanged(nameof(IsLoading));
+                OnPropertyChanged(nameof(IsEmpty));
+                OnPropertyChanged(nameof(HasProjects));
             }
         }
     }
@@ -38,6 +42,11 @@ public class MainWindowViewModel : ViewModelBase
     {
         _projectDetectionService = new UniversalProjectDetectionService();
         Projects = new ObservableCollection<GameProject>();
+        Projects.CollectionChanged += (_, _) =>
+        {
+            OnPropertyChanged(nameof(IsEmpty));
+            OnPropertyChanged(nameof(HasProjects));
+        };
         
         ScanProjectsCommand = new AsyncCommand(ScanProjectsAsync);
         ImportProjectCommand = new AsyncCommand(ImportProjectAsync);

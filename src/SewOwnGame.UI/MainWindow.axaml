@@ -3,86 +3,334 @@
         xmlns:vm="using:SewOwnGame.UI.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="600"
         x:Class="SewOwnGame.UI.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Title="Sew Own Game"
-        Width="900" Height="600">
+        Width="900" Height="600"
+        MinWidth="700" MinHeight="450">
 
-    <Design.DataContext>
-        <vm:MainWindowViewModel/>
-    </Design.DataContext>
+    <Window.Styles>
 
-    <Grid RowDefinitions="Auto,*" Margin="16">
-        
-        <!-- Header -->
-        <StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,16">
-            <TextBlock Text="Sew Own Game" 
-                       FontSize="24" 
-                       FontWeight="Bold"/>
-            <TextBlock Text="Game Development Productivity Tools!" 
-                       FontSize="16" 
-                       Foreground="Gray"/>
-            
-            <Button Content="Search Projects" 
-                    Command="{Binding ScanProjectsCommand}"
-                    IsEnabled="{Binding !IsLoading}"
-                    HorizontalAlignment="Left"
-                    Padding="16,8"/>
+        <!-- Sidebar button base -->
+        <Style Selector="Button.sidebar-btn">
+            <Setter Property="Width" Value="48"/>
+            <Setter Property="Height" Value="48"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <Style Selector="Button.sidebar-btn:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#2A2A3E"/>
+        </Style>
+        <Style Selector="Button.sidebar-btn:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="#33334A"/>
+        </Style>
 
-            <Button Content="Import Project..." 
-                    Command="{Binding ImportProjectCommand}"
-                    IsEnabled="{Binding !IsLoading}"
-                    Padding="16,8"/>
-        </StackPanel>
-        
-        <!-- Projects List -->
-        <Border Grid.Row="1" 
-                BorderBrush="LightGray" 
-                BorderThickness="2" 
-                CornerRadius="8"
-                Padding="16">
-            
-            <Grid>
-                <!-- Loading Indicator -->
-                <TextBlock Text="Loading projects..." 
-                           IsVisible="{Binding IsLoading}"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"
-                           FontSize="16"
-                           Foreground="Gray"/>
-                
-                <!-- Projects List -->
-                <ScrollViewer IsVisible="{Binding !IsLoading}">
-                    <ItemsControl ItemsSource="{Binding Projects}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Border BorderBrush="LightGray" 
-                                        BorderThickness="0,0,0,1" 
-                                        Padding="10"
-                                        Margin="0,0,0,5">
-                                    <StackPanel Spacing="5">
-                                        <TextBlock Text="{Binding Name}" 
-                                                   FontSize="16" 
-                                                   FontWeight="SemiBold"/>
-                                        <TextBlock Text="{Binding Path}" 
-                                                   FontSize="12" 
-                                                   Foreground="Gray"/>
-                                        <StackPanel Orientation="Horizontal" Spacing="15">
-                                            <TextBlock Text="{Binding EngineType, StringFormat='Engine: {0}'}" 
-                                                       FontSize="12"/>
-                                            <TextBlock Text="{Binding EngineVersion, StringFormat='Version: {0}'}" 
-                                                       FontSize="12"/>
-                                            <TextBlock Text="{Binding DisplaySize}" 
-                                                       FontSize="12"/>
-                                        </StackPanel>
-                                    </StackPanel>
-                                </Border>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
+        <!-- Active sidebar button -->
+        <Style Selector="Button.sidebar-btn.active /template/ ContentPresenter">
+            <Setter Property="Background" Value="#3B3B52"/>
+        </Style>
+
+        <!-- Settings panel button -->
+        <Style Selector="Button.settings-action-btn">
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        </Style>
+
+        <!-- Theme toggle button -->
+        <Style Selector="Button.theme-toggle-btn">
+            <Setter Property="Height" Value="42"/>
+            <Setter Property="Padding" Value="14,0"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#3A3A55"/>
+            <Setter Property="Background" Value="#2A2A3E"/>
+            <Setter Property="Foreground" Value="#C8C8E8"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        </Style>
+        <Style Selector="Button.theme-toggle-btn:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#33334A"/>
+        </Style>
+
+        <!-- Overlay close area -->
+        <Style Selector="Button.overlay-close">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+        </Style>
+
+    </Window.Styles>
+
+    <!-- Root: stacks the main layout AND the overlay on top -->
+    <Grid>
+
+        <!-- ════════════════════════════════════════════
+             MAIN LAYOUT: Sidebar + Content
+             ════════════════════════════════════════════ -->
+        <Grid ColumnDefinitions="64,*">
+
+            <!-- ─── SIDEBAR ─── -->
+            <Border Grid.Column="0"
+                    Background="#13131F"
+                    BorderBrush="#2A2A3E"
+                    BorderThickness="0,0,1,0">
+
+                <DockPanel LastChildFill="False">
+
+                    <!-- Logo / App icon at top -->
+                    <StackPanel DockPanel.Dock="Top"
+                                HorizontalAlignment="Center"
+                                Margin="0,14,0,18">
+                        <Border Width="40" Height="40"
+                                CornerRadius="10"
+                                Background="#6C63FF"
+                                ToolTip.Tip="Sew Own Game">
+                            <TextBlock Text="🪡"
+                                       FontSize="20"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Divider -->
+                    <Border DockPanel.Dock="Top"
+                            Height="1"
+                            Background="#2A2A3E"
+                            Margin="10,0"/>
+
+                    <!-- Nav items (future pages go here) -->
+                    <StackPanel DockPanel.Dock="Top"
+                                Margin="8,12,8,0"
+                                Spacing="4">
+
+                        <!-- Projects (active page) -->
+                        <Button Classes="sidebar-btn active"
+                                ToolTip.Tip="Projects">
+                            <TextBlock Text="📁"
+                                       FontSize="18"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+                        </Button>
+
+                    </StackPanel>
+
+                    <!-- Settings button pinned to bottom -->
+                    <StackPanel DockPanel.Dock="Bottom"
+                                Margin="8,0,8,14"
+                                Spacing="4">
+
+                        <Button Classes="sidebar-btn"
+                                Name="SettingsButton"
+                                ToolTip.Tip="Settings"
+                                Click="OnSettingsClick">
+                            <TextBlock Name="SettingsIcon"
+                                       Text="⚙"
+                                       FontSize="20"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       Foreground="#8888AA"/>
+                        </Button>
+
+                    </StackPanel>
+
+                </DockPanel>
+            </Border>
+
+            <!-- ─── MAIN CONTENT ─── -->
+            <Grid Grid.Column="1" Margin="28,24,28,24">
+                <Grid RowDefinitions="Auto,*">
+
+                    <!-- Header -->
+                    <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,20">
+                        <TextBlock Text="Projects"
+                                   FontSize="22"
+                                   FontWeight="SemiBold"/>
+                        <TextBlock Text="All game projects detected on system"
+                                   FontSize="13"
+                                   Foreground="Gray"/>
+
+                        <Button Content="Scan Projects"
+                                Command="{Binding ScanProjectsCommand}"
+                                IsEnabled="{Binding !IsLoading}"
+                                Margin="0,10,0,0"
+                                Padding="16,8"/>
+                    </StackPanel>
+
+                    <!-- Projects List -->
+                    <Border Grid.Row="1"
+                            BorderBrush="LightGray"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="12">
+                        <Grid>
+
+                            <!-- Loading -->
+                            <TextBlock Text="Scanning Projects..."
+                                       IsVisible="{Binding IsLoading}"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       FontSize="14"
+                                       Foreground="Gray"/>
+
+                            <!-- Empty state -->
+                            <StackPanel IsVisible="{Binding IsEmpty}"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Spacing="8">
+                                <TextBlock Text="🎮"
+                                           FontSize="40"
+                                           HorizontalAlignment="Center"/>
+                                <TextBlock Text="No project found! Click 'import project' to manually find it"
+                                           FontSize="15"
+                                           Foreground="Gray"
+                                           HorizontalAlignment="Center"/>
+                                <TextBlock Text="Click in 'Search Projects' to start!"
+                                           FontSize="12"
+                                           Foreground="Gray"
+                                           HorizontalAlignment="Center"/>
+                            </StackPanel>
+
+                            <!-- Project items -->
+                            <ScrollViewer IsVisible="{Binding HasProjects}">
+                                <ItemsControl ItemsSource="{Binding Projects}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border BorderBrush="LightGray"
+                                                    BorderThickness="0,0,0,1"
+                                                    Padding="10"
+                                                    Margin="0,0,0,4">
+                                                <StackPanel Spacing="4">
+                                                    <TextBlock Text="{Binding Name}"
+                                                               FontSize="15"
+                                                               FontWeight="SemiBold"/>
+                                                    <TextBlock Text="{Binding Path}"
+                                                               FontSize="11"
+                                                               Foreground="Gray"/>
+                                                    <StackPanel Orientation="Horizontal" Spacing="16">
+                                                        <TextBlock Text="{Binding EngineType, StringFormat='Engine: {0}'}"
+                                                                   FontSize="11"/>
+                                                        <TextBlock Text="{Binding EngineVersion, StringFormat='Versão: {0}'}"
+                                                                   FontSize="11"/>
+                                                        <TextBlock Text="{Binding DisplaySize}"
+                                                                   FontSize="11"/>
+                                                    </StackPanel>
+                                                </StackPanel>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+
+                        </Grid>
+                    </Border>
+
+                </Grid>
             </Grid>
-        </Border>
+
+        </Grid>
+        <!-- END MAIN LAYOUT -->
+
+
+        <!-- ════════════════════════════════════════════
+             OVERLAY: dim backdrop + settings panel
+             ════════════════════════════════════════════ -->
+        <Grid Name="SettingsOverlay"
+              IsVisible="False">
+
+            <!-- Dim backdrop — clicking closes the panel -->
+            <Border Background="#000000"
+                    Opacity="0.55"
+                    Name="OverlayBackdrop"/>
+            <Button Classes="overlay-close"
+                    Click="OnOverlayBackdropClick"/>
+
+            <!-- Floating settings card -->
+            <Border Name="SettingsPanel"
+                    Width="320"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Stretch"
+                    Margin="64,0,0,0"
+                    Background="#1C1C2E"
+                    BorderBrush="#3A3A55"
+                    BorderThickness="0,0,1,0"
+                    BoxShadow="4 0 24 0 #40000000">
+
+                <Grid RowDefinitions="Auto,*,Auto" Margin="20,24,20,20">
+
+                    <!-- Panel header -->
+                    <StackPanel Grid.Row="0" Spacing="2" Margin="0,0,0,20">
+                        <TextBlock Text="Configurações"
+                                   FontSize="17"
+                                   FontWeight="SemiBold"
+                                   Foreground="#E8E8F5"/>
+                        <Border Height="1"
+                                Background="#2A2A3E"
+                                Margin="0,10,0,0"/>
+                    </StackPanel>
+
+                    <!-- Settings sections -->
+                    <StackPanel Grid.Row="1" Spacing="24">
+
+                        <!-- Theme section -->
+                        <StackPanel Spacing="10">
+
+                            <TextBlock Text="Current Theme"
+                                       FontSize="12"
+                                       FontWeight="SemiBold"
+                                       Foreground="#8888AA"
+                                       LetterSpacing="1"/>
+
+                            <Button Name="ThemeToggleButton"
+                                    Classes="theme-toggle-btn"
+                                    Click="OnThemeToggleClick">
+                                <StackPanel Orientation="Horizontal" Spacing="12">
+                                    <TextBlock Name="ThemeIcon"
+                                               Text="☀️"
+                                               FontSize="18"
+                                               VerticalAlignment="Center"/>
+                                    <StackPanel Spacing="1" VerticalAlignment="Center">
+                                        <TextBlock Name="ThemeLabel"
+                                                   Text="Light Theme"
+                                                   FontSize="13"
+                                                   FontWeight="Medium"
+                                                   Foreground="#C8C8E8"/>
+                                        <TextBlock Name="ThemeSubLabel"
+                                                   Text="Click to change!"
+                                                   FontSize="10"
+                                                   Foreground="#6666AA"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Button>
+
+                        </StackPanel>
+
+                    </StackPanel>
+
+                    <!-- Close button at bottom -->
+                    <Button Grid.Row="2"
+                            Content="Close"
+                            HorizontalAlignment="Right"
+                            Padding="16,8"
+                            CornerRadius="8"
+                            Click="OnSettingsClick"/>
+
+                </Grid>
+            </Border>
+
+        </Grid>
+        <!-- END OVERLAY -->
+
     </Grid>
 </Window>

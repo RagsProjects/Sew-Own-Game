@@ -9,7 +9,7 @@ namespace SewOwnGame.UI;
 public partial class MainWindow : Window
 {
     private bool _isSettingsOpen = false;
-    private bool _isDarkTheme = false;
+    private bool _isDarkTheme = true;
 
     public MainWindow()
     {
@@ -58,7 +58,7 @@ public partial class MainWindow : Window
         // Update icon and label inside the button
         if (_isDarkTheme)
         {
-            ThemeIcon.Text = "☀";
+            ThemeIcon.Text = "☀️";
             ThemeLabel.Text = "Light Theme";
             ThemeSubLabel.Text = "Click to change!";
         }
