@@ -30,7 +30,9 @@ public class UnityEngineSupport : IEngineSupport
                 var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
                 // Linux include variations on different languages
                 paths.Add(Path.Combine(home, "Documents", "Unity Projects"));
-                paths.Add(Path.Combine(home, "Documentos", "Unity Projects")); // Portugues
+                paths.Add(Path.Combine(home, "Documents"));
+                paths.Add(Path.Combine(home, "Documentos"));                    // Portuguese
+                paths.Add(Path.Combine(home, "Documentos", "Unity Projects"));  // Portuguese
                 paths.Add(Path.Combine(home, "Projects"));
                 paths.Add(Path.Combine(home, "UnityProjects"));
                 paths.Add(Path.Combine(home, "projects"));
