@@ -25,15 +25,15 @@
             <Setter Property="Cursor" Value="Hand"/>
         </Style>
         <Style Selector="Button.sidebar-btn:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="#2A2A3E"/>
+            <Setter Property="Background" Value="{DynamicResource SidebarHoverBg}"/>
         </Style>
         <Style Selector="Button.sidebar-btn:pressed /template/ ContentPresenter">
-            <Setter Property="Background" Value="#33334A"/>
+            <Setter Property="Background" Value="{DynamicResource SidebarHoverBg}"/>
         </Style>
 
         <!-- Active sidebar button -->
         <Style Selector="Button.sidebar-btn.active /template/ ContentPresenter">
-            <Setter Property="Background" Value="#3B3B52"/>
+            <Setter Property="Background" Value="{DynamicResource SidebarHoverBg}"/>
         </Style>
 
         <!-- Settings panel button -->
@@ -52,15 +52,15 @@
             <Setter Property="Padding" Value="14,0"/>
             <Setter Property="CornerRadius" Value="8"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="BorderBrush" Value="#3A3A55"/>
-            <Setter Property="Background" Value="#2A2A3E"/>
-            <Setter Property="Foreground" Value="#C8C8E8"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource SystemAccentColorLight1}"/>
+            <Setter Property="Background" Value="{DynamicResource SystemAccentColorDark2}"/>
+            <Setter Property="Foreground" Value="{DynamicResource SystemAccentColorLight3}"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="HorizontalContentAlignment" Value="Left"/>
         </Style>
         <Style Selector="Button.theme-toggle-btn:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="#33334A"/>
+            <Setter Property="Background" Value="{DynamicResource SystemAccentColorDark1}"/>
         </Style>
 
         <!-- Overlay close area -->
@@ -69,6 +69,15 @@
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="VerticalAlignment" Value="Stretch"/>
+        </Style>
+        <Style Selector="Button.overlay-close /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+        <Style Selector="Button.overlay-close:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+        <Style Selector="Button.overlay-close:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent"/>
         </Style>
 
     </Window.Styles>
@@ -83,8 +92,8 @@
 
             <!-- ─── SIDEBAR ─── -->
             <Border Grid.Column="0"
-                    Background="#13131F"
-                    BorderBrush="#2A2A3E"
+                    Background="{DynamicResource SystemAccentColorDark3}"
+                    BorderBrush="{DynamicResource SystemAccentColorDark1}"
                     BorderThickness="0,0,1,0">
 
                 <DockPanel LastChildFill="False">
@@ -95,9 +104,9 @@
                                 Margin="0,14,0,18">
                         <Border Width="40" Height="40"
                                 CornerRadius="10"
-                                Background="#6C63FF"
+                                Background="{DynamicResource SystemAccentColor}"
                                 ToolTip.Tip="Sew Own Game">
-                            <TextBlock Text="🪡"
+                            <TextBlock Text="🧵"
                                        FontSize="20"
                                        HorizontalAlignment="Center"
                                        VerticalAlignment="Center"/>
@@ -107,7 +116,7 @@
                     <!-- Divider -->
                     <Border DockPanel.Dock="Top"
                             Height="1"
-                            Background="#2A2A3E"
+                            Background="{DynamicResource SystemAccentColorDark1}"
                             Margin="10,0"/>
 
                     <!-- Nav items (future pages go here) -->
@@ -140,7 +149,7 @@
                                        FontSize="20"
                                        HorizontalAlignment="Center"
                                        VerticalAlignment="Center"
-                                       Foreground="#8888AA"/>
+                                       Foreground="{DynamicResource SidebarSettingsIcon}"/>
                         </Button>
 
                     </StackPanel>
@@ -262,8 +271,8 @@
                     HorizontalAlignment="Left"
                     VerticalAlignment="Stretch"
                     Margin="64,0,0,0"
-                    Background="#1C1C2E"
-                    BorderBrush="#3A3A55"
+                    Background="{DynamicResource SystemAccentColorDark1}"
+                    BorderBrush="{DynamicResource SystemAccentColorLight3}"
                     BorderThickness="0,0,1,0"
                     BoxShadow="4 0 24 0 #40000000">
 
@@ -271,12 +280,12 @@
 
                     <!-- Panel header -->
                     <StackPanel Grid.Row="0" Spacing="2" Margin="0,0,0,20">
-                        <TextBlock Text="Configurações"
+                        <TextBlock Text="Settings"
                                    FontSize="17"
                                    FontWeight="SemiBold"
                                    Foreground="#E8E8F5"/>
                         <Border Height="1"
-                                Background="#2A2A3E"
+                                Background="#aaaaaa"
                                 Margin="0,10,0,0"/>
                     </StackPanel>
 
@@ -286,10 +295,10 @@
                         <!-- Theme section -->
                         <StackPanel Spacing="10">
 
-                            <TextBlock Text="Current Theme"
+                            <TextBlock Text="Interface Theme"
                                        FontSize="12"
                                        FontWeight="SemiBold"
-                                       Foreground="#8888AA"
+                                       Foreground="#aaaaaa"
                                        LetterSpacing="1"/>
 
                             <Button Name="ThemeToggleButton"
@@ -309,7 +318,7 @@
                                         <TextBlock Name="ThemeSubLabel"
                                                    Text="Click to change!"
                                                    FontSize="10"
-                                                   Foreground="#6666AA"/>
+                                                   Foreground="#aaaaaa"/>
                                     </StackPanel>
                                 </StackPanel>
                             </Button>

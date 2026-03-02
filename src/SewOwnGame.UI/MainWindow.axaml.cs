@@ -38,9 +38,6 @@ public partial class MainWindow : Window
     {
         _isSettingsOpen = false;
         SettingsOverlay.IsVisible = false;
-
-        SettingsIcon.Foreground =
-            new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#8888AA"));
     }
 
     // ── Theme toggle ──────────────────────────────────────────────────
