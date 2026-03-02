@@ -16,13 +16,9 @@
                     <Color x:Key="SystemAccentColorLight1">#F07830</Color>
                     <Color x:Key="SystemAccentColorLight2">#F59050</Color>
                     <Color x:Key="SystemAccentColorLight3">#FAA870</Color>
-                    <SolidColorBrush x:Key="SystemAccentColorBrush">#E8650A</SolidColorBrush>
-                    <SolidColorBrush x:Key="AccentFillColorDefaultBrush">#E8650A</SolidColorBrush>
-                    <SolidColorBrush x:Key="AccentFillColorSecondaryBrush">#F07830</SolidColorBrush>
-                    <SolidColorBrush x:Key="AccentFillColorTertiaryBrush">#F59050</SolidColorBrush>
 
                     <!-- Dynamic colors on light theme -->
-                    <SolidColorBrush x:Key="SidebarActiveBg">#FFE0CC</SolidColorBrush>
+                    <SolidColorBrush x:Key="SidebarActiveBg">#FF8032</SolidColorBrush>
                     <SolidColorBrush x:Key="SidebarHoverBg">#F5E6DC</SolidColorBrush>
                     <SolidColorBrush x:Key="SidebarPressedBg">#EBDDD3</SolidColorBrush>
                     <SolidColorBrush x:Key="SidebarActiveIcon">#E8650A</SolidColorBrush>
@@ -32,6 +28,7 @@
                     <SolidColorBrush x:Key="CloseButtonBackground">#FFFFFF</SolidColorBrush>
                     <SolidColorBrush x:Key="CloseButtonForeground">#1A1A2E</SolidColorBrush>
                     <SolidColorBrush x:Key="CloseButtonBorder">#DDDDE8</SolidColorBrush>
+                    <SolidColorBrush x:Key="CloseButtonText">#2A2A3E</SolidColorBrush>
                 </ResourceDictionary>
 
                 <ResourceDictionary x:Key="Dark">
@@ -43,10 +40,6 @@
                     <Color x:Key="SystemAccentColorLight1">#8880FF</Color>
                     <Color x:Key="SystemAccentColorLight2">#A49DFF</Color>
                     <Color x:Key="SystemAccentColorLight3">#C0BBFF</Color>
-                    <SolidColorBrush x:Key="SystemAccentColorBrush">#6C63FF</SolidColorBrush>
-                    <SolidColorBrush x:Key="AccentFillColorDefaultBrush">#6C63FF</SolidColorBrush>
-                    <SolidColorBrush x:Key="AccentFillColorSecondaryBrush">#8880FF</SolidColorBrush>
-                    <SolidColorBrush x:Key="AccentFillColorTertiaryBrush">#A49DFF</SolidColorBrush>
 
                     <!-- Cores dinâmicas da sidebar no dark -->
                     <SolidColorBrush x:Key="SidebarActiveBg">#3B3B52</SolidColorBrush>
@@ -59,6 +52,7 @@
                     <SolidColorBrush x:Key="CloseButtonBackground">#2A2A3E</SolidColorBrush>
                     <SolidColorBrush x:Key="CloseButtonForeground">#C8C8E8</SolidColorBrush>
                     <SolidColorBrush x:Key="CloseButtonBorder">#3A3A55</SolidColorBrush>
+                    <SolidColorBrush x:Key="CloseButtonText">#FFFFFF</SolidColorBrush>
                 </ResourceDictionary>
 
             </ResourceDictionary.ThemeDictionaries>

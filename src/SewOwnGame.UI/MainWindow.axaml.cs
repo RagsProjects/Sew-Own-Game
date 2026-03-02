@@ -57,13 +57,13 @@ public partial class MainWindow : Window
         {
             ThemeIcon.Text = "☀️";
             ThemeLabel.Text = "Light Theme";
-            ThemeSubLabel.Text = "Click to change!";
+            ThemeSubLabel.Text = "Click me for Light Theme!";
         }
         else
         {
             ThemeIcon.Text = "🌙";
             ThemeLabel.Text = "Dark Theme";
-            ThemeSubLabel.Text = "Click to change!";
+            ThemeSubLabel.Text = "Click me for Dark Theme!";
         }
     }
 }

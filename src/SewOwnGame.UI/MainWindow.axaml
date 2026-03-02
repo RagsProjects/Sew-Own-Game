@@ -7,21 +7,21 @@
         x:Class="SewOwnGame.UI.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Title="Sew Own Game"
-        Width="900" Height="600"
-        MinWidth="700" MinHeight="450">
+        Width="1000" Height="600"
+        MinWidth="600" MinHeight="400">
 
     <Window.Styles>
 
         <!-- Sidebar button base -->
         <Style Selector="Button.sidebar-btn">
-            <Setter Property="Width" Value="48"/>
-            <Setter Property="Height" Value="48"/>
+            <Setter Property="Width" Value="32"/>
+            <Setter Property="Height" Value="32"/>
             <Setter Property="Padding" Value="0"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="CornerRadius" Value="8"/>
             <Setter Property="Cursor" Value="Hand"/>
         </Style>
         <Style Selector="Button.sidebar-btn:pointerover /template/ ContentPresenter">
@@ -38,7 +38,7 @@
 
         <!-- Settings panel button -->
         <Style Selector="Button.settings-action-btn">
-            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="Padding" Value="12"/>
             <Setter Property="CornerRadius" Value="8"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Cursor" Value="Hand"/>
@@ -48,19 +48,19 @@
 
         <!-- Theme toggle button -->
         <Style Selector="Button.theme-toggle-btn">
-            <Setter Property="Height" Value="42"/>
-            <Setter Property="Padding" Value="14,0"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Padding" Value="12,0"/>
             <Setter Property="CornerRadius" Value="8"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="BorderBrush" Value="{DynamicResource SystemAccentColorLight1}"/>
-            <Setter Property="Background" Value="{DynamicResource SystemAccentColorDark2}"/>
-            <Setter Property="Foreground" Value="{DynamicResource SystemAccentColorLight3}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource CloseButtonBorder}"/>
+            <Setter Property="Background" Value="{DynamicResource CloseButtonBackground}"/>
+            <Setter Property="Foreground" Value="{DynamicResource CloseButtonForeground}"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="HorizontalContentAlignment" Value="Left"/>
         </Style>
         <Style Selector="Button.theme-toggle-btn:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource SystemAccentColorDark1}"/>
+            <Setter Property="Background" Value="{DynamicResource SystemAccentColorDark3}"/>
         </Style>
 
         <!-- Overlay close area -->
@@ -88,12 +88,12 @@
         <!-- ════════════════════════════════════════════
              MAIN LAYOUT: Sidebar + Content
              ════════════════════════════════════════════ -->
-        <Grid ColumnDefinitions="64,*">
+        <Grid ColumnDefinitions="48,*">
 
             <!-- ─── SIDEBAR ─── -->
             <Border Grid.Column="0"
-                    Background="{DynamicResource SystemAccentColorDark3}"
-                    BorderBrush="{DynamicResource SystemAccentColorDark1}"
+                    Background="{DynamicResource SidebarActiveBg}"
+                    BorderBrush="{DynamicResource SystemAccentColorDark3}"
                     BorderThickness="0,0,1,0">
 
                 <DockPanel LastChildFill="False">
@@ -103,8 +103,8 @@
                                 HorizontalAlignment="Center"
                                 Margin="0,14,0,18">
                         <Border Width="40" Height="40"
-                                CornerRadius="10"
-                                Background="{DynamicResource SystemAccentColor}"
+                                CornerRadius="8"
+                                Background="{DynamicResource SidebarActiveIcon}"
                                 ToolTip.Tip="Sew Own Game">
                             <TextBlock Text="🧵"
                                        FontSize="20"
@@ -116,19 +116,19 @@
                     <!-- Divider -->
                     <Border DockPanel.Dock="Top"
                             Height="1"
-                            Background="{DynamicResource SystemAccentColorDark1}"
-                            Margin="10,0"/>
+                            Background="{DynamicResource SidebarActiveBg}"
+                            Margin="8,0"/>
 
                     <!-- Nav items (future pages go here) -->
                     <StackPanel DockPanel.Dock="Top"
-                                Margin="8,12,8,0"
+                                Margin="8,8,8,0"
                                 Spacing="4">
 
                         <!-- Projects (active page) -->
                         <Button Classes="sidebar-btn active"
                                 ToolTip.Tip="Projects">
                             <TextBlock Text="📁"
-                                       FontSize="18"
+                                       FontSize="16"
                                        HorizontalAlignment="Center"
                                        VerticalAlignment="Center"/>
                         </Button>
@@ -137,7 +137,7 @@
 
                     <!-- Settings button pinned to bottom -->
                     <StackPanel DockPanel.Dock="Bottom"
-                                Margin="8,0,8,14"
+                                Margin="8,8,8,8"
                                 Spacing="4">
 
                         <Button Classes="sidebar-btn"
@@ -146,7 +146,7 @@
                                 Click="OnSettingsClick">
                             <TextBlock Name="SettingsIcon"
                                        Text="⚙"
-                                       FontSize="20"
+                                       FontSize="16"
                                        HorizontalAlignment="Center"
                                        VerticalAlignment="Center"
                                        Foreground="{DynamicResource SidebarSettingsIcon}"/>
@@ -314,9 +314,9 @@
                                                    Text="Light Theme"
                                                    FontSize="13"
                                                    FontWeight="Medium"
-                                                   Foreground="#C8C8E8"/>
+                                                   Foreground="{DynamicResource CloseButtonText}"/>
                                         <TextBlock Name="ThemeSubLabel"
-                                                   Text="Click to change!"
+                                                   Text="Click me for Light Theme!"
                                                    FontSize="10"
                                                    Foreground="#aaaaaa"/>
                                     </StackPanel>
@@ -329,6 +329,7 @@
 
                     <!-- Close button at bottom -->
                     <Button Grid.Row="2"
+                            Classes="close-btn"
                             Content="Close"
                             HorizontalAlignment="Right"
                             Padding="16,8"
