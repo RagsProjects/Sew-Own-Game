@@ -15,19 +15,47 @@ public class UnityEngineSupport : IEngineSupport
     {
         get
         {
+            Console.WriteLine("Detecting OS...");
+
             var paths = new List<string>();
             
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 // Windows
-                paths.Add(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Unity Projects"));
-                paths.Add(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Projects"));
+                Console.WriteLine("Searching files...");
+                
+                var documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
+                var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                var projectsPath = Path.Combine(userProfile, "Projects");
+                
+                paths.Add(Path.Combine(documentsPath, "Unity Projects"));
+                paths.Add(projectsPath);
                 paths.Add(@"C:\Projects");
                 paths.Add(@"D:\Projects");
+                
+                if (Directory.Exists(documentsPath))
+                {
+                    var docSubFolders = Directory.GetDirectories(documentsPath, "*", SearchOption.AllDirectories);
+                    foreach (var folder in docSubFolders)
+                    {
+                        paths.Add(folder);
+                    }
+                }
+                
+                if (Directory.Exists(projectsPath))
+                {
+                    var projectSubFolders = Directory.GetDirectories(projectsPath, "*", SearchOption.AllDirectories);
+                    foreach (var folder in projectSubFolders)
+                    {
+                        paths.Add(folder);
+                    }
+                }
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
                 // Linux
+                Console.WriteLine("Searching files...");
+                
                 var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
                 var user = Environment.UserName;
                 var homePath = Path.Combine(home);
@@ -59,10 +87,39 @@ public class UnityEngineSupport : IEngineSupport
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
                 // macOS
+                Console.WriteLine("Searching files...");
+
                 var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-                paths.Add(Path.Combine(home, "Documents", "Unity Projects"));
-                paths.Add(Path.Combine(home, "Projects"));
+                var documentsPath = Path.Combine(home, "Documents");
+                var projectsPath = Path.Combine(home, "Projects");
+                
+                paths.Add(Path.Combine(documentsPath, "Unity Projects"));
+                paths.Add(projectsPath);
                 paths.Add(Path.Combine(home, "UnityProjects"));
+                
+                if (Directory.Exists(documentsPath))
+                {
+                    var docSubFolders = Directory.GetDirectories(documentsPath, "*", SearchOption.AllDirectories);
+                    foreach (var docFolder in docSubFolders)
+                    {
+                        paths.Add(docFolder);
+                    }
+                }
+                
+                if (Directory.Exists(projectsPath))
+                {
+                    var projectSubFolders = Directory.GetDirectories(projectsPath, "*", SearchOption.AllDirectories);
+                    foreach (var projectFolder in projectSubFolders)
+                    {
+                        paths.Add(projectFolder);
+                    }
+                }
+            }
+
+            else
+            {
+                // Implement here: error message to UI
+                Console.WriteLine("Error: Couldn't detect user's OS");
             }
             
             return paths.ToArray();
