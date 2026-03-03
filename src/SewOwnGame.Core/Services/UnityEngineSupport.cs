@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using System.IO;
 using SewOwnGame.Core.Enums;
 using SewOwnGame.Core.Interfaces;
 using SewOwnGame.Core.Models;
@@ -28,16 +29,32 @@ public class UnityEngineSupport : IEngineSupport
             {
                 // Linux
                 var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-                // Linux include variations on different languages
-                paths.Add(Path.Combine(home, "Documents", "Unity Projects"));
-                paths.Add(Path.Combine(home, "Documents"));
-                paths.Add(Path.Combine(home, "Documentos"));                    // Portuguese
-                paths.Add(Path.Combine(home, "Documentos", "Unity Projects"));  // Portuguese
-                paths.Add(Path.Combine(home, "Projects"));
-                paths.Add(Path.Combine(home, "UnityProjects"));
-                paths.Add(Path.Combine(home, "projects"));
-                paths.Add(Path.Combine(home, "unity-projects"));
-                paths.Add(Path.Combine(home));
+                var user = Environment.UserName;
+                var homePath = Path.Combine(home);
+                var mediaPath = Path.Combine("/media", user);
+
+                // Search in folder home
+                if (Directory.Exists(homePath))
+                {
+                    var homeSubFolders = Directory.GetDirectories(homePath, "*", SearchOption.AllDirectories);
+
+                    // And add to list
+                    foreach (var homeSubFolder in homeSubFolders)
+                    {
+                        paths.Add(homeSubFolder);
+                    }
+                }
+
+                if (Directory.Exists(mediaPath))
+                {
+                    var mediaSubFolders = Directory.GetDirectories(mediaPath, "*", SearchOption.AllDirectories);
+
+                    // And add to list
+                    foreach (var mediaSubFolder in mediaSubFolders)
+                    {
+                        paths.Add(mediaSubFolder);
+                    }
+                }
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
