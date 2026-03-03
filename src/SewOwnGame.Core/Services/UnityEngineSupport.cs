@@ -33,22 +33,36 @@ public class UnityEngineSupport : IEngineSupport
                 paths.Add(@"C:\Projects");
                 paths.Add(@"D:\Projects");
                 
-                if (Directory.Exists(documentsPath))
+                try
                 {
-                    var docSubFolders = Directory.GetDirectories(documentsPath, "*", SearchOption.AllDirectories);
-                    foreach (var folder in docSubFolders)
+                    if (Directory.Exists(documentsPath))
                     {
-                        paths.Add(folder);
+                        var docSubFolders = Directory.GetDirectories(documentsPath, "*", SearchOption.AllDirectories);
+                        foreach (var folder in docSubFolders)
+                        {
+                            paths.Add(folder);
+                        }
                     }
                 }
-                
-                if (Directory.Exists(projectsPath))
+                catch (UnauthorizedAccessException)
                 {
-                    var projectSubFolders = Directory.GetDirectories(projectsPath, "*", SearchOption.AllDirectories);
-                    foreach (var folder in projectSubFolders)
+                    // Ignore high-privilege folders
+                }
+                
+                try
+                {
+                    if (Directory.Exists(projectsPath))
                     {
-                        paths.Add(folder);
+                        var projectSubFolders = Directory.GetDirectories(projectsPath, "*", SearchOption.AllDirectories);
+                        foreach (var folder in projectSubFolders)
+                        {
+                            paths.Add(folder);
+                        }
                     }
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    // Ignore high-privilege folders
                 }
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
@@ -61,27 +75,40 @@ public class UnityEngineSupport : IEngineSupport
                 var homePath = Path.Combine(home);
                 var mediaPath = Path.Combine("/media", user);
 
-                // Search in folder home
-                if (Directory.Exists(homePath))
+                try
                 {
-                    var homeSubFolders = Directory.GetDirectories(homePath, "*", SearchOption.AllDirectories);
-
-                    // And add to list
-                    foreach (var homeSubFolder in homeSubFolders)
+                    if (Directory.Exists(homePath))
                     {
-                        paths.Add(homeSubFolder);
+                        var homeSubFolders = Directory.GetDirectories(homePath, "*", SearchOption.AllDirectories);
+
+                        // And add to list
+                        foreach (var homeSubFolder in homeSubFolders)
+                        {
+                            paths.Add(homeSubFolder);
+                        }
                     }
                 }
-
-                if (Directory.Exists(mediaPath))
+                catch (UnauthorizedAccessException)
                 {
-                    var mediaSubFolders = Directory.GetDirectories(mediaPath, "*", SearchOption.AllDirectories);
+                    // Ignore high-privilege folders
+                }
 
-                    // And add to list
-                    foreach (var mediaSubFolder in mediaSubFolders)
+                try
+                {
+                    if (Directory.Exists(mediaPath))
                     {
-                        paths.Add(mediaSubFolder);
+                        var mediaSubFolders = Directory.GetDirectories(mediaPath, "*", SearchOption.AllDirectories);
+
+                        // And add to list
+                        foreach (var mediaSubFolder in mediaSubFolders)
+                        {
+                            paths.Add(mediaSubFolder);
+                        }
                     }
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    // Ignore high-privilege folders
                 }
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
@@ -97,22 +124,36 @@ public class UnityEngineSupport : IEngineSupport
                 paths.Add(projectsPath);
                 paths.Add(Path.Combine(home, "UnityProjects"));
                 
-                if (Directory.Exists(documentsPath))
+                try
                 {
-                    var docSubFolders = Directory.GetDirectories(documentsPath, "*", SearchOption.AllDirectories);
-                    foreach (var docFolder in docSubFolders)
+                    if (Directory.Exists(documentsPath))
                     {
-                        paths.Add(docFolder);
+                        var docSubFolders = Directory.GetDirectories(documentsPath, "*", SearchOption.AllDirectories);
+                        foreach (var docFolder in docSubFolders)
+                        {
+                            paths.Add(docFolder);
+                        }
                     }
                 }
-                
-                if (Directory.Exists(projectsPath))
+                catch (UnauthorizedAccessException)
                 {
-                    var projectSubFolders = Directory.GetDirectories(projectsPath, "*", SearchOption.AllDirectories);
-                    foreach (var projectFolder in projectSubFolders)
+                    // Ignore high-privilege folders
+                }
+                
+                try
+                {
+                    if (Directory.Exists(projectsPath))
                     {
-                        paths.Add(projectFolder);
+                        var projectSubFolders = Directory.GetDirectories(projectsPath, "*", SearchOption.AllDirectories);
+                        foreach (var projectFolder in projectSubFolders)
+                        {
+                            paths.Add(projectFolder);
+                        }
                     }
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    // Ignore high-privilege folders
                 }
             }
 
@@ -123,6 +164,7 @@ public class UnityEngineSupport : IEngineSupport
             }
             
             return paths.ToArray();
+            Console.WriteLine("[✔] Search Succeeded")
         }
     }
     
