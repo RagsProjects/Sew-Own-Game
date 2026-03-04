@@ -10,6 +10,7 @@ public class UnityEngineSupport : IEngineSupport
 {
     public string EngineName => "Unity";
     public EngineType EngineType => EngineType.Unity;
+    public bool HasPermissionErrors { get; private set; }
     
     public string[] CommonProjectPaths
     {
@@ -46,7 +47,8 @@ public class UnityEngineSupport : IEngineSupport
                 }
                 catch (UnauthorizedAccessException)
                 {
-                    // Ignore high-privilege folders
+                    HasPermissionErrors = true;
+                    Console.WriteLine("[⚠] Found folders with admin privileges");
                 }
                 
                 try
@@ -62,7 +64,8 @@ public class UnityEngineSupport : IEngineSupport
                 }
                 catch (UnauthorizedAccessException)
                 {
-                    // Ignore high-privilege folders
+                    HasPermissionErrors = true;
+                    Console.WriteLine("[⚠] Found folders with admin privileges");
                 }
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
@@ -90,7 +93,8 @@ public class UnityEngineSupport : IEngineSupport
                 }
                 catch (UnauthorizedAccessException)
                 {
-                    // Ignore high-privilege folders
+                    HasPermissionErrors = true;
+                    Console.WriteLine("[⚠] Found folders with admin privileges");
                 }
 
                 try
@@ -108,7 +112,8 @@ public class UnityEngineSupport : IEngineSupport
                 }
                 catch (UnauthorizedAccessException)
                 {
-                    // Ignore high-privilege folders
+                    HasPermissionErrors = true;
+                    Console.WriteLine("[⚠] Found folders with admin privileges");
                 }
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
@@ -137,7 +142,8 @@ public class UnityEngineSupport : IEngineSupport
                 }
                 catch (UnauthorizedAccessException)
                 {
-                    // Ignore high-privilege folders
+                    HasPermissionErrors = true;
+                    Console.WriteLine("[⚠] Found folders with admin privileges");
                 }
                 
                 try
@@ -153,7 +159,8 @@ public class UnityEngineSupport : IEngineSupport
                 }
                 catch (UnauthorizedAccessException)
                 {
-                    // Ignore high-privilege folders
+                    HasPermissionErrors = true;
+                    Console.WriteLine("[⚠] Found folders with admin privileges");
                 }
             }
 

@@ -6,6 +6,9 @@ namespace SewOwnGame.Core.Services;
 public class UniversalProjectDetectionService : IProjectDetectionService
 {
     private readonly EngineManager _engineManager;
+    private List<IEngineSupport> _engines;
+
+    public bool HasPermissionErrors { get; private set; }
     
     public UniversalProjectDetectionService()
     {
@@ -16,6 +19,23 @@ public class UniversalProjectDetectionService : IProjectDetectionService
     {
         var projects = new List<GameProject>();
         var engines = _engineManager.GetAllEngines();
+
+    public async Task<List<GameProject>> DetectProjectsAsync()
+    {
+        var projects = new List<GameProject>();
+        HasPermissionErrors = false;
+
+        foreach (var engine in _engines)
+        {
+            var paths = engine.CommonProjectPaths;
+            
+            // Verify for permission errors
+            if (engine is UnityEngineSupport unityEngine && unityEngine.HasPermissionErrors)
+            {
+                HasPermissionErrors = true;
+            }
+        }
+    }
         
         foreach (var engine in engines)
         {
