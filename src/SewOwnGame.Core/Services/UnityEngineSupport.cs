@@ -164,7 +164,7 @@ public class UnityEngineSupport : IEngineSupport
             }
             
             return paths.ToArray();
-            Console.WriteLine("[✔] Search Succeeded")
+            Console.WriteLine("[✔] Search Succeeded");
         }
     }
     

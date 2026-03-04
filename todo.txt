@@ -1,4 +1,2 @@
-- Fix crash when searching projects
 - Implement error message in UI and terminal like this (Error: Couldn't find user's OS [0x00162])
-- Implement loading screen for UI when searching for projects on disk
 - Implement filter for projects list
