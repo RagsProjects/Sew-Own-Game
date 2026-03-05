@@ -16,6 +16,8 @@ public class MainWindowViewModel : ViewModelBase
 {
     private readonly IProjectDetectionService _projectDetectionService;
     private bool _isLoading;
+    private bool _hasPermissionErrors;
+    private string _permissionWarningMessage = string.Empty;
     
     public ObservableCollection<GameProject> Projects { get; }
     public bool IsEmpty => !_isLoading && Projects.Count == 0;
@@ -37,6 +39,59 @@ public class MainWindowViewModel : ViewModelBase
             }
         }
     }
+
+    public bool HasPermissionErrors
+    {
+        get => _hasPermissionErrors;
+        set
+        {
+            if (_hasPermissionErrors != value)
+            {
+                _hasPermissionErrors = value;
+                OnPropertyChanged(nameof(HasPermissionErrors));
+            }
+        }
+    }
+
+    public string PermissionWarningMessage
+    {
+        get => _permissionWarningMessage;
+        set
+        {
+            if (_permissionWarningMessage != value)
+            {
+                _permissionWarningMessage = value;
+                OnPropertyChanged(nameof(PermissionWarningMessage));
+            }
+        }
+    }
+
+    private async Task ScanProjectsAsync()
+    {
+        IsLoading = true;
+        Projects.Clear();
+        HasPermissionErrors = false;
+
+        try
+        {
+            var detectedProjects = await Task.Run(async () => await _projectDetectionService.DetectProjectsAsync());
+
+            if (_projectDetectionService is UniversalProjectDetectionService universalService && universalService.HasPermissionErrors)
+            {
+                HasPermissionErrors = true;
+                PermissionWarningMessage = universalService.PermissionWarningMessage;
+            }
+
+            foreach (var project in detectedProjects)
+            {
+                Projects.Add(project);
+            }
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
     
     public MainWindowViewModel()
     {
@@ -51,29 +106,8 @@ public class MainWindowViewModel : ViewModelBase
         ScanProjectsCommand = new AsyncCommand(ScanProjectsAsync);
         ImportProjectCommand = new AsyncCommand(ImportProjectAsync);
     }
-    
-    private async Task ScanProjectsAsync()
-    {
-        IsLoading = true;
-        Projects.Clear();
-        
-        try
-        {
-            var detectedProjects = await Task.Run(async () => 
-                await _projectDetectionService.DetectProjectsAsync());
-            
-            foreach (var project in detectedProjects)
-            {
-                Projects.Add(project);
-            }
-        }
-        finally
-        {
-            IsLoading = false;
-        }
-    }
 
-private async Task ImportProjectAsync()
+    private async Task ImportProjectAsync()
     {
         var lifetime = Avalonia.Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
         var mainWindow = lifetime?.MainWindow;
