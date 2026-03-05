@@ -15,30 +15,20 @@ public class UniversalProjectDetectionService : IProjectDetectionService
         _engineManager = new EngineManager();
     }
     
-    public async Task<IEnumerable<GameProject>> DetectProjectsAsync()
-    {
-        var projects = new List<GameProject>();
-        var engines = _engineManager.GetAllEngines();
-
     public async Task<List<GameProject>> DetectProjectsAsync()
     {
         var projects = new List<GameProject>();
         HasPermissionErrors = false;
-
+        
         foreach (var engine in _engines)
         {
-            var paths = engine.CommonProjectPaths;
-            
-            // Verify for permission errors
+            var paths = engine.CommonProjectsPaths;
+
             if (engine is UnityEngineSupport unityEngine && unityEngine.HasPermissionErrors)
             {
                 HasPermissionErrors = true;
             }
-        }
-    }
-        
-        foreach (var engine in engines)
-        {
+
             foreach (var basePath in engine.CommonProjectPaths)
             {
                 if (!Directory.Exists(basePath))

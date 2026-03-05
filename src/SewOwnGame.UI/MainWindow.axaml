@@ -177,6 +177,22 @@
                                 Padding="16,8"/>
                     </StackPanel>
 
+                    <!-- Permission warning -->
+                    <StackPanel IsVisible="{Binding HasPermissionErrors}"
+                            Background="FFF3CD"
+                            Padding="12"
+                            Margin="0,0,0,12"
+                            Spacing="8">
+                        <TextBlock Text="⚠️ Permission Warning"
+                                FontSize="13"
+                                FontWeight="SemiBold"
+                                Foreground="#856404"/>
+                        <TextBlock Text="Make sure that your Unity project path doesn't have high permission, or reopen SOG as admin"
+                                FontSize="12"
+                                Foreground="856404"
+                                TextWrapping="Wrap"/>
+                    </StackPanel>
+
                     <!-- Projects List -->
                     <Border Grid.Row="1"
                             BorderBrush="LightGray"

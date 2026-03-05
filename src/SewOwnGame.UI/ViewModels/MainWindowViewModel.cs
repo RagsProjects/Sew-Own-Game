@@ -16,6 +16,7 @@ public class MainWindowViewModel : ViewModelBase
 {
     private readonly IProjectDetectionService _projectDetectionService;
     private bool _isLoading;
+    private bool _hasPermissionErrors;
     
     public ObservableCollection<GameProject> Projects { get; }
     public bool IsEmpty => !_isLoading && Projects.Count == 0;
@@ -35,6 +36,45 @@ public class MainWindowViewModel : ViewModelBase
                 OnPropertyChanged(nameof(IsEmpty));
                 OnPropertyChanged(nameof(HasProjects));
             }
+        }
+    }
+
+    public bool HasPermissionErrors
+    {
+        get => _hasPermissionErrors;
+        set
+        {
+            if (_hasPermissionErrors != value)
+            {
+                _hasPermissionErrors = value;
+                OnPropertyChanged(nameof(HasPermissionErrors));
+            }
+        }
+    }
+
+    private async Task ScanProjectsAsync()
+    {
+        IsLoading = true;
+        Projects.Clear();
+        HasPermissionErrors = false;
+
+        try
+        {
+            var detectedProjects = await Task.Run(async () => await _projectDetectionService.DetectProjectsAsync());
+
+            if (_projectDetectionService is UniversalProjectDetectionService universalService)
+            {
+                HasPermissionErrors = universalService.HasPermissionErrors;
+            }
+
+            foreach (var project in detectedProjects)
+            {
+                Projects.Add(project);
+            }
+        }
+        finally (var project in detectedProjects)
+        {
+            IsLoading = false;
         }
     }
     
