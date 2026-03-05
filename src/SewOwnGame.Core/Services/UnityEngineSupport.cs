@@ -11,6 +11,26 @@ public class UnityEngineSupport : IEngineSupport
     public string EngineName => "Unity";
     public EngineType EngineType => EngineType.Unity;
     public bool HasPermissionErrors { get; private set; }
+
+    private static IEnumerable<string> SafeGetDirectories(string path)
+    {
+        var dirs = new List<string>();
+        try
+        {
+            dirs.AddRange(Directory.GetDirectories(path));
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return dirs;
+        }
+
+        foreach (var dir in dirs.ToList())
+        {
+            dirs.AddRange(SafeGetDirectories(dir));
+        }
+
+        return dirs;
+    }
     
     public string[] CommonProjectPaths
     {
@@ -76,18 +96,33 @@ public class UnityEngineSupport : IEngineSupport
                 var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
                 var user = Environment.UserName;
                 var homePath = Path.Combine(home);
+                var documentsPath = Path.Combine(home, user, "Documents");
                 var mediaPath = Path.Combine("/media", user);
+                var runMediaPath = Path.Combine("/run/media", user);
 
                 try
                 {
                     if (Directory.Exists(homePath))
                     {
-                        var homeSubFolders = Directory.GetDirectories(homePath, "*", SearchOption.AllDirectories);
-
-                        // And add to list
-                        foreach (var homeSubFolder in homeSubFolders)
+                        foreach (var homeFolder in SafeGetDirectories(homePath))
                         {
-                            paths.Add(homeSubFolder);
+                            paths.Add(homeFolder);
+                        }
+                    }
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    HasPermissionErrors = true;
+                    Console.WriteLine("[⚠] Found folders with admin privileges");
+                }
+
+                try
+                {
+                    if (Directory.Exists(documentsPath))
+                    {
+                        foreach (var documentsFolder in SafeGetDirectories(documentsPath))
+                        {
+                            paths.Add(documentsFolder);
                         }
                     }
                 }
@@ -101,12 +136,25 @@ public class UnityEngineSupport : IEngineSupport
                 {
                     if (Directory.Exists(mediaPath))
                     {
-                        var mediaSubFolders = Directory.GetDirectories(mediaPath, "*", SearchOption.AllDirectories);
-
-                        // And add to list
-                        foreach (var mediaSubFolder in mediaSubFolders)
+                        foreach (var mediaFolder in SafeGetDirectories(mediaPath))
                         {
-                            paths.Add(mediaSubFolder);
+                            paths.Add(mediaFolder);
+                        }
+                    }
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    HasPermissionErrors = true;
+                    Console.WriteLine("[⚠] Found folders with admin privileges");
+                }
+
+                try
+                {
+                    if (Directory.Exists(runMediaPath))
+                    {
+                        foreach (var runMediaFolder in SafeGetDirectories(runMediaPath))
+                        {
+                            paths.Add(runMediaFolder);
                         }
                     }
                 }
@@ -133,10 +181,9 @@ public class UnityEngineSupport : IEngineSupport
                 {
                     if (Directory.Exists(documentsPath))
                     {
-                        var docSubFolders = Directory.GetDirectories(documentsPath, "*", SearchOption.AllDirectories);
-                        foreach (var docFolder in docSubFolders)
+                        foreach (var documentsFolder in SafeGetDirectories(documentsPath))
                         {
-                            paths.Add(docFolder);
+                            paths.Add(documentsFolder);
                         }
                     }
                 }
@@ -150,10 +197,9 @@ public class UnityEngineSupport : IEngineSupport
                 {
                     if (Directory.Exists(projectsPath))
                     {
-                        var projectSubFolders = Directory.GetDirectories(projectsPath, "*", SearchOption.AllDirectories);
-                        foreach (var projectFolder in projectSubFolders)
+                        foreach (var projectsFolder in SafeGetDirectories(projectsPath))
                         {
-                            paths.Add(projectFolder);
+                            paths.Add(projectsFolder);
                         }
                     }
                 }
@@ -170,8 +216,8 @@ public class UnityEngineSupport : IEngineSupport
                 Console.WriteLine("Error: Couldn't detect user's OS");
             }
             
-            return paths.ToArray();
             Console.WriteLine("[✔] Search Succeeded");
+            return paths.ToArray();
         }
     }
     
