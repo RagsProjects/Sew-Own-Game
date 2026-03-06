@@ -1,0 +1,41 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{05ABC413-D487-4905-909E-B64D43DE0CB5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SewOwnGame.Core", "src\SewOwnGame.Core\SewOwnGame.Core.csproj", "{D8A0F748-7A83-4C85-92AB-B2A5A2320B08}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SewOwnGame.UI", "src\SewOwnGame.UI\SewOwnGame.UI.csproj", "{F9489F51-1F4B-4A8B-85CE-519F38559573}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SewOwnGame.Tests", "src\SewOwnGame.Tests\SewOwnGame.Tests.csproj", "{752493C1-A361-40F5-AA06-A052CC0590DA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D8A0F748-7A83-4C85-92AB-B2A5A2320B08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8A0F748-7A83-4C85-92AB-B2A5A2320B08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8A0F748-7A83-4C85-92AB-B2A5A2320B08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8A0F748-7A83-4C85-92AB-B2A5A2320B08}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9489F51-1F4B-4A8B-85CE-519F38559573}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9489F51-1F4B-4A8B-85CE-519F38559573}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9489F51-1F4B-4A8B-85CE-519F38559573}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9489F51-1F4B-4A8B-85CE-519F38559573}.Release|Any CPU.Build.0 = Release|Any CPU
+		{752493C1-A361-40F5-AA06-A052CC0590DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{752493C1-A361-40F5-AA06-A052CC0590DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{752493C1-A361-40F5-AA06-A052CC0590DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{752493C1-A361-40F5-AA06-A052CC0590DA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D8A0F748-7A83-4C85-92AB-B2A5A2320B08} = {05ABC413-D487-4905-909E-B64D43DE0CB5}
+		{F9489F51-1F4B-4A8B-85CE-519F38559573} = {05ABC413-D487-4905-909E-B64D43DE0CB5}
+		{752493C1-A361-40F5-AA06-A052CC0590DA} = {05ABC413-D487-4905-909E-B64D43DE0CB5}
+	EndGlobalSection
+EndGlobal
