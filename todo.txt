@@ -1,4 +1,0 @@
-- Implement "Select Project Folder" button to UI
-- Make first build version of Sew Own Game
-- Implement error message in UI and terminal like this (Error: Couldn't find user's OS [0x00162])
-- Implement filter for projects list
