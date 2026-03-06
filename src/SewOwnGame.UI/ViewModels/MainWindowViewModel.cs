@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Diagnostics;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -17,13 +18,17 @@ public class MainWindowViewModel : ViewModelBase
     private readonly IProjectDetectionService _projectDetectionService;
     private bool _isLoading;
     private bool _hasPermissionErrors;
+    private bool _showInvalidFolderError;
     private string _permissionWarningMessage = string.Empty;
     
     public ObservableCollection<GameProject> Projects { get; }
     public bool IsEmpty => !_isLoading && Projects.Count == 0;
     public bool HasProjects => !_isLoading && Projects.Count > 0;
+
     public ICommand ScanProjectsCommand { get; }
     public ICommand ImportProjectCommand { get; }
+    public ICommand OpenGitHubIssuesCommand { get; }
+    public ICommand DismissInvalidFolderErrorCommand { get; }
     
     public bool IsLoading
     {
@@ -66,6 +71,29 @@ public class MainWindowViewModel : ViewModelBase
         }
     }
 
+    public bool ShowInvalidFolderError
+    {
+        get => _showInvalidFolderError;
+        set
+        {
+            if (_showInvalidFolderError != value)
+            {
+                _showInvalidFolderError = value;
+                OnPropertyChanged(nameof(ShowInvalidFolderError));
+            }
+        }
+    }
+
+    private Task OpenGitHubIssuesAsync()
+    {
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "https://github.com/RagsProjects/Sew-Own-Game/issues/new/choose",
+            UseShellExecute = true
+        });
+        return Task.CompletedTask;
+    }
+
     private async Task ScanProjectsAsync()
     {
         IsLoading = true;
@@ -105,10 +133,18 @@ public class MainWindowViewModel : ViewModelBase
         
         ScanProjectsCommand = new AsyncCommand(ScanProjectsAsync);
         ImportProjectCommand = new AsyncCommand(ImportProjectAsync);
+        OpenGitHubIssuesCommand = new AsyncCommand(OpenGitHubIssuesAsync);
+        DismissInvalidFolderErrorCommand = new AsyncCommand(() => 
+        {
+            ShowInvalidFolderError = false;
+            return Task.CompletedTask;
+        });
     }
 
     private async Task ImportProjectAsync()
     {
+        ShowInvalidFolderError = false;
+
         var lifetime = Avalonia.Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
         var mainWindow = lifetime?.MainWindow;
         
@@ -141,6 +177,7 @@ public class MainWindowViewModel : ViewModelBase
                 else
                 {
                     Console.WriteLine("Not a valid game project folder!");
+                    ShowInvalidFolderError = true;
                 }
             }
             finally
