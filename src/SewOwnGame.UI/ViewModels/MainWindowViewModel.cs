@@ -20,6 +20,7 @@ public class MainWindowViewModel : ViewModelBase
     private bool _hasPermissionErrors;
     private bool _showInvalidFolderError;
     private string _permissionWarningMessage = string.Empty;
+    private string _floatingErrorMessage = string.Empty;
     
     public ObservableCollection<GameProject> Projects { get; }
     public bool IsEmpty => !_isLoading && Projects.Count == 0;
@@ -71,6 +72,19 @@ public class MainWindowViewModel : ViewModelBase
         }
     }
 
+    public string FloatingErrorMessage
+    {
+        get => _floatingErrorMessage;
+        set
+        {
+            if (_floatingErrorMessage != value)
+            {
+                _floatingErrorMessage = value;
+                OnPropertyChanged(nameof(FloatingErrorMessage));
+            }
+        }
+    }
+
     public bool ShowInvalidFolderError
     {
         get => _showInvalidFolderError;
@@ -113,6 +127,22 @@ public class MainWindowViewModel : ViewModelBase
             foreach (var project in detectedProjects)
             {
                 Projects.Add(project);
+            }
+        }
+        catch (Exception ex)
+        {
+            FloatingErrorMessage = "A permission error occurred while scanning. Reopen SOG as admin or change folder permissions.";
+            ShowInvalidFolderError = true;
+
+            /* This was supposed to be a crash log
+            but this catch itself fix the crashing
+            so it will dignose the crash in terminal
+            even if it doesn't crash. I'll leave it here because it may be useful someday*/
+            Console.WriteLine($"[CRASH] {ex.GetType().FullName}: {ex.Message}");
+            Console.WriteLine($"[STACK] {ex.StackTrace}");
+            if (ex.InnerException != null)
+            {
+                Console.WriteLine($"[INNER] {ex.InnerException.GetType().FullName}: {ex.InnerException.Message}");
             }
         }
         finally
@@ -177,6 +207,7 @@ public class MainWindowViewModel : ViewModelBase
                 else
                 {
                     Console.WriteLine("Not a valid game project folder!");
+                    FloatingErrorMessage = "Not a valid game project folder!";
                     ShowInvalidFolderError = true;
                 }
             }

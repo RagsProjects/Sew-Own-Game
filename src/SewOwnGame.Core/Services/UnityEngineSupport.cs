@@ -14,22 +14,42 @@ public class UnityEngineSupport : IEngineSupport
 
     private static IEnumerable<string> SafeGetDirectories(string path)
     {
-        var dirs = new List<string>();
-        try
+        /* DON'T TOUCH THIS!!!
+        Or it will crash everytime it runs into a syslink
+        when searching for game projects folders*/
+        
+        var result = new List<string>();
+        var stack = new Stack<string>();
+        stack.Push(path);
+
+        while (stack.Count > 0)
         {
-            dirs.AddRange(Directory.GetDirectories(path));
-        }
-        catch (UnauthorizedAccessException)
-        {
-            return dirs;
+            var current = stack.Pop();
+            string[] subDirs;
+
+            try
+            {
+                subDirs = Directory.GetDirectories(current);
+            }
+            catch (UnauthorizedAccessException) { continue; }
+            catch (IOException) { continue; }
+
+            foreach (var dir in subDirs)
+            {
+                try
+                {
+                    var info = new DirectoryInfo(dir);
+                    if (info.Attributes.HasFlag(FileAttributes.ReparsePoint))
+                        continue;
+                    
+                    result.Add(dir);
+                    stack.Push(dir);
+                }
+                catch (IOException) { continue; }
+            }
         }
 
-        foreach (var dir in dirs.ToList())
-        {
-            dirs.AddRange(SafeGetDirectories(dir));
-        }
-
-        return dirs;
+        return result;
     }
     
     public string[] CommonProjectPaths
@@ -45,6 +65,7 @@ public class UnityEngineSupport : IEngineSupport
                 // Windows
                 Console.WriteLine("Searching files...");
                 
+                // Scan only documents folder and default project path to avoid scanning the entire user folder
                 var documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
                 var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
                 var projectsPath = Path.Combine(userProfile, "Projects");
@@ -96,7 +117,6 @@ public class UnityEngineSupport : IEngineSupport
                 var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
                 var user = Environment.UserName;
                 var homePath = Path.Combine(home);
-                var documentsPath = Path.Combine(home, user, "Documents");
                 var mediaPath = Path.Combine("/media", user);
                 var runMediaPath = Path.Combine("/run/media", user);
 
@@ -107,22 +127,6 @@ public class UnityEngineSupport : IEngineSupport
                         foreach (var homeFolder in SafeGetDirectories(homePath))
                         {
                             paths.Add(homeFolder);
-                        }
-                    }
-                }
-                catch (UnauthorizedAccessException)
-                {
-                    HasPermissionErrors = true;
-                    Console.WriteLine("[⚠] Found folders with admin privileges");
-                }
-
-                try
-                {
-                    if (Directory.Exists(documentsPath))
-                    {
-                        foreach (var documentsFolder in SafeGetDirectories(documentsPath))
-                        {
-                            paths.Add(documentsFolder);
                         }
                     }
                 }
@@ -170,36 +174,15 @@ public class UnityEngineSupport : IEngineSupport
                 Console.WriteLine("Searching files...");
 
                 var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-                var documentsPath = Path.Combine(home, "Documents");
-                var projectsPath = Path.Combine(home, "Projects");
-                
-                paths.Add(Path.Combine(documentsPath, "Unity Projects"));
-                paths.Add(projectsPath);
-                paths.Add(Path.Combine(home, "UnityProjects"));
+                var homePath = Path.Combine(home);
                 
                 try
                 {
-                    if (Directory.Exists(documentsPath))
+                    if (Directory.Exists(homePath))
                     {
-                        foreach (var documentsFolder in SafeGetDirectories(documentsPath))
+                        foreach (var homeFolder in SafeGetDirectories(homePath))
                         {
-                            paths.Add(documentsFolder);
-                        }
-                    }
-                }
-                catch (UnauthorizedAccessException)
-                {
-                    HasPermissionErrors = true;
-                    Console.WriteLine("[⚠] Found folders with admin privileges");
-                }
-                
-                try
-                {
-                    if (Directory.Exists(projectsPath))
-                    {
-                        foreach (var projectsFolder in SafeGetDirectories(projectsPath))
-                        {
-                            paths.Add(projectsFolder);
+                            paths.Add(homeFolder);
                         }
                     }
                 }

@@ -359,7 +359,7 @@
                 <Grid ColumnDefinitions="*,Auto">
 
                     <StackPanel Grid.Column="0" Spacing="4">
-                        <TextBlock Text="This is not a valid game engine folder."
+                        <TextBlock Text="{Binding FloatingErrorMessage}"
                                 FontSize="13"
                                 FontWeight="SemiBold"
                                 Foreground="#EEEEEE"

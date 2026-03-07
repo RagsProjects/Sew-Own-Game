@@ -24,10 +24,14 @@ public class UniversalProjectDetectionService : IProjectDetectionService
         {
             foreach (var basePath in engine.CommonProjectPaths)
             {
-                if (!Directory.Exists(basePath))
-                    continue;
-
-                var directories = Directory.GetDirectories(basePath);
+                if (!Directory.Exists(basePath)){ continue; }
+                string[] directories;
+                try
+                {
+                    directories = Directory.GetDirectories(basePath);
+                }
+                catch (UnauthorizedAccessException) { continue; }
+                catch (IOException) { continue; }
 
                 foreach (var dir in directories)
                 {
