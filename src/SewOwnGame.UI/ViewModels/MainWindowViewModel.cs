@@ -16,12 +16,23 @@ namespace SewOwnGame.UI.ViewModels;
 public class MainWindowViewModel : ViewModelBase
 {
     private readonly IProjectDetectionService _projectDetectionService;
+    private readonly SettingsService _settingsService;
+
     private bool _isLoading;
     private bool _hasPermissionErrors;
     private bool _showInvalidFolderError;
     private string _permissionWarningMessage = string.Empty;
     private string _floatingErrorMessage = string.Empty;
-    
+    private AppSettings _appSettings;
+
+    //      Game Engines Paths      \\
+    private string _unityEditorPath = string.Empty;
+    private string _unrealEditorPath = string.Empty;
+    private string _godotEditorPath = string.Empty;
+    private string _gmEditorPath = string.Empty;
+    private string _strideEditorPath = string.Empty;
+    private string _o3deEditorPath = string.Empty;
+
     public ObservableCollection<GameProject> Projects { get; }
     public bool IsEmpty => !_isLoading && Projects.Count == 0;
     public bool HasProjects => !_isLoading && Projects.Count > 0;
@@ -150,11 +161,35 @@ public class MainWindowViewModel : ViewModelBase
             IsLoading = false;
         }
     }
+
+    private async Task BrowseUnityEditorPathAsync()
+    {
+        var lifetime = Avalonia.Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
+        var mainWindow = lifetime?.MainWindow;
+        if (mainWindow == null) return;
+
+        var folders = await mainWindow.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+        {
+            Title = "Select Unity Editor Folder",
+            AllowMultiple = false
+        });
+
+        if (folders.Count > 0)
+        {
+            UnityEditorPath = folders[0].Path.LocalPath;
+        }
+    }
     
     public MainWindowViewModel()
     {
+        _settingsService = new SettingsService();
+        _appSettings = _settingsService.Load();
+        _unityEditorPath = _appSettings.UnityEditorPath;
         _projectDetectionService = new UniversalProjectDetectionService();
+
+        BrowseUnityEditorPathCommand = new AsyncCommand(BrowseUnityEditorPathAsync);
         Projects = new ObservableCollection<GameProject>();
+
         Projects.CollectionChanged += (_, _) =>
         {
             OnPropertyChanged(nameof(IsEmpty));
@@ -164,12 +199,31 @@ public class MainWindowViewModel : ViewModelBase
         ScanProjectsCommand = new AsyncCommand(ScanProjectsAsync);
         ImportProjectCommand = new AsyncCommand(ImportProjectAsync);
         OpenGitHubIssuesCommand = new AsyncCommand(OpenGitHubIssuesAsync);
+        
         DismissInvalidFolderErrorCommand = new AsyncCommand(() => 
         {
             ShowInvalidFolderError = false;
             return Task.CompletedTask;
         });
     }
+
+    // Game Engines Proprieties
+    public string UnityEditorPath
+    {
+        get => _unityEditorPath;
+        set
+        {
+            if (_unityEditorPath != value)
+            {
+                _unityEditorPath = value;
+                OnPropertyChanged(nameof(UnityEditorPath));
+                _appSettings.UnityEditorPath = value;
+                _settingsService.Save(_appSettings);
+            }
+        }
+    }
+
+    public ICommand BrowseUnityEditorPathCommand { get; }
 
     private async Task ImportProjectAsync()
     {

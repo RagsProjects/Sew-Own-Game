@@ -23,4 +23,12 @@
   <ItemGroup>
     <ProjectReference Include="..\SewOwnGame.Core\SewOwnGame.Core.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="assets\**"/>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(RuntimeIdentifier)' == 'win-x64' Or '$(RuntimeIdentifier)' == 'win-x86'">
+    <ApplicationIcon Include="assets\build\win\sogIcon.ico"/>
+  </ItemGroup>
 </Project>

@@ -2,6 +2,9 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Styling;
+using Avalonia.Platform;
+using System;
+using System.Runtime.InteropServices;
 using SewOwnGame.UI.ViewModels;
 
 namespace SewOwnGame.UI;
@@ -19,6 +22,19 @@ public partial class MainWindow : Window
         WindowStartupLocation = WindowStartupLocation.CenterScreen;
         Topmost = true;
         Topmost = false;
+
+        /* Desktop Icon 
+        Use .ico for Windows and .png for other platforms*/
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            Icon = new WindowIcon(AssetLoader.Open(
+                new Uri("avares://SewOwnGame.UI/assets/build/win/sogIcon.ico")));
+        }
+        else
+        {
+            Icon = new WindowIcon(AssetLoader.Open(
+                new Uri("avares://SewOwnGame.UI/assets/ui/sogIcon.png")));
+        }
     }
 
     // ── Settings overlay ──────────────────────────────────────────────
