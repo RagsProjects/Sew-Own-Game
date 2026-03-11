@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="600"
+        Name="RootWindow"
         x:Class="SewOwnGame.UI.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Title="Sew Own Game"
@@ -225,24 +226,83 @@
                                         <DataTemplate>
                                             <Border BorderBrush="LightGray"
                                                     BorderThickness="0,0,0,1"
-                                                    Padding="10"
-                                                    Margin="0,0,0,4">
-                                                <StackPanel Spacing="4">
-                                                    <TextBlock Text="{Binding Name}"
-                                                               FontSize="15"
-                                                               FontWeight="SemiBold"/>
-                                                    <TextBlock Text="{Binding Path}"
-                                                               FontSize="11"
-                                                               Foreground="Gray"/>
-                                                    <StackPanel Orientation="Horizontal" Spacing="16">
-                                                        <TextBlock Text="{Binding EngineType, StringFormat='Engine: {0}'}"
-                                                                   FontSize="11"/>
-                                                        <TextBlock Text="{Binding EngineVersion, StringFormat='Version: {0}'}"
-                                                                   FontSize="11"/>
-                                                        <TextBlock Text="{Binding DisplaySize}"
-                                                                   FontSize="11"/>
-                                                    </StackPanel>
-                                                </StackPanel>
+                                                    Margin="0,0,0,2">
+                                                <Grid ColumnDefinitions="*, Auto">
+                                                    <Button Grid.Column="0"
+                                                            Command="{Binding #RootWindow.DataContext.OpenProjectCommand}"
+                                                            CommandParameter="{Binding}"
+                                                            Background="Transparent"
+                                                            BorderThickness="0"
+                                                            HorizontalAlignment="Stretch"
+                                                            HorizontalContentAlignment="Left"
+                                                            Padding="10"
+                                                            Cursor="Hand">
+                                                        <StackPanel Spacing="4">
+                                                            <TextBlock Text="{Binding Name}"
+                                                                    FontSize="15"
+                                                                    FontWeight="SemiBold"/>
+                                                            <TextBlock Text="{Binding Path}"
+                                                                    FontSize="11"
+                                                                    Foreground="Gray"/>
+                                                            <StackPanel Orientation="Horizontal" Spacing="16">
+                                                                <TextBlock Text="{Binding EngineType, StringFormat='Engine: {0}'}"
+                                                                        FontSize="11"/>
+                                                                <TextBlock Text="{Binding EngineVersion, StringFormat='Version: {0}'}"
+                                                                        FontSize="11"/>
+                                                                <TextBlock Text="{Binding DisplaySize}"
+                                                                        FontSize="11"/>
+                                                            </StackPanel>
+                                                        </StackPanel>
+                                                    </Button>
+
+                                                    <Button Grid.Column="1"
+                                                            Content="•••"
+                                                            Background="Transparent"
+                                                            BorderThickness="0"
+                                                            VerticalAlignment="Center"
+                                                            Padding="12,8"
+                                                            Cursor="Hand"
+                                                            FontSize="16">
+                                                        <Button.Flyout>
+                                                            <Flyout Placement="BottomEdgeAlignedRight">
+                                                                <StackPanel MinWidth="100" Spacing="2">
+                                                                    <Button Command="{Binding #RootWindow.DataContext.OpenInExplorerCommand}"
+                                                                            CommandParameter="{Binding}"
+                                                                            Background="Transparent"
+                                                                            BorderThickness="0"
+                                                                            HorizontalAlignment="Stretch"
+                                                                            HorizontalContentAlignment="Left"
+                                                                            Padding="12,8"
+                                                                            Cursor="Hand">
+                                                                        <StackPanel Orientation="Horizontal" Spacing="10">
+                                                                            <TextBlock Text="📂" FontSize="14"/>
+                                                                            <TextBlock Text="Open in Explorer" FontSize="13"/>
+                                                                        </StackPanel>
+                                                                    </Button>
+
+                                                                    <Border Height="1"
+                                                                            Background="Gray"
+                                                                            Opacity="0.4"
+                                                                            Margin="0.2"/>
+
+                                                                    <Button Command="{Binding #RootWindow.DataContext.DeleteProjectCommand}"
+                                                                            CommandParameter="{Binding}"
+                                                                            Background="Transparent"
+                                                                            BorderThickness="0"
+                                                                            HorizontalAlignment="Stretch"
+                                                                            HorizontalContentAlignment="Left"
+                                                                            Padding="12,8"
+                                                                            Cursor="Hand">
+                                                                        <StackPanel Orientation="Horizontal" Spacing="10">
+                                                                            <TextBlock Text="🗑️" FontSize="14" Foreground="#E53935"/>
+                                                                            <TextBlock Text="Delete" FontSize="13" Foreground="#E53935"/>
+                                                                        </StackPanel>
+                                                                    </Button>
+                                                                </StackPanel>
+                                                            </Flyout>
+                                                        </Button.Flyout>
+                                                    </Button>
+                                                </Grid>
                                             </Border>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>

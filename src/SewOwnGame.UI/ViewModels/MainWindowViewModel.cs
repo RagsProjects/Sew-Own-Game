@@ -1,4 +1,6 @@
 using System;
+using System.Runtime.InteropServices;
+using System.IO;
 using System.Linq;
 using System.Diagnostics;
 using System.Collections.ObjectModel;
@@ -41,6 +43,10 @@ public class MainWindowViewModel : ViewModelBase
     public ICommand ImportProjectCommand { get; }
     public ICommand OpenGitHubIssuesCommand { get; }
     public ICommand DismissInvalidFolderErrorCommand { get; }
+    public ICommand OpenProjectCommand { get; }
+    public ICommand OpenInExplorerCommand { get; }
+    public ICommand RenameProjectCommand { get; }
+    public ICommand DeleteProjectCommand { get; }
     
     public bool IsLoading
     {
@@ -179,6 +185,76 @@ public class MainWindowViewModel : ViewModelBase
             UnityEditorPath = folders[0].Path.LocalPath;
         }
     }
+
+    private Task OpenProjectAsync(GameProject? project)
+    {
+        if (project == null) return Task.CompletedTask;
+
+        string executablePath;
+
+        if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            executablePath = Path.Combine(_unityEditorPath, project.EngineVersion, "Editor", "Unity.exe");
+        }
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        {
+            executablePath = Path.Combine(_unityEditorPath, project.EngineVersion, "Unity.app", "Contents", "MacOS", "Unity");
+        }
+        else
+        {
+            executablePath = Path.Combine(_unityEditorPath, project.EngineVersion, "Editor", "Unity");
+        }
+
+        try
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = executablePath,
+                Arguments = $"-projectPath \"{project.Path}\"",
+                UseShellExecute = true
+            });
+        }
+        catch (Exception ex)
+        {
+            FloatingErrorMessage = $"Could not open Unity editor. Check the Editor Path in Settings -> Unity Settings.\n{ex.Message}";
+            ShowInvalidFolderError = true;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private Task OpenInExplorerAsync(GameProject? project)
+    {
+        if (project == null) return Task.CompletedTask;
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            Process.Start("explorer.exe", project.Path);
+        }
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        {
+            Process.Start("open", project.Path);
+        }
+        else
+        {
+            Process.Start("xdg-open", project.Path);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private Task RenameProjectAsync(GameProject? project)
+    {
+        // Placeholder for future implementation
+        return Task.CompletedTask;
+    }
+
+    private Task DeleteProjectAsync(GameProject? project)
+    {
+        if (project == null) return Task.CompletedTask;
+        Projects.Remove(project);
+        return Task.CompletedTask;
+    }
     
     public MainWindowViewModel()
     {
@@ -187,6 +263,10 @@ public class MainWindowViewModel : ViewModelBase
         _unityEditorPath = _appSettings.UnityEditorPath;
         _projectDetectionService = new UniversalProjectDetectionService();
 
+        OpenProjectCommand = new AsyncRelayCommand<GameProject>(OpenProjectAsync);
+        OpenInExplorerCommand   = new AsyncRelayCommand<GameProject>(OpenInExplorerAsync);
+        RenameProjectCommand    = new AsyncRelayCommand<GameProject>(RenameProjectAsync);
+        DeleteProjectCommand    = new AsyncRelayCommand<GameProject>(DeleteProjectAsync);
         BrowseUnityEditorPathCommand = new AsyncCommand(BrowseUnityEditorPathAsync);
         Projects = new ObservableCollection<GameProject>();
 
@@ -297,6 +377,37 @@ public class AsyncCommand : ICommand
         try
         {
             await _execute();
+        }
+        finally
+        {
+            _isExecuting = false;
+            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+        }
+    }
+}
+
+public class AsyncRelayCommand<T> : ICommand
+{
+    private readonly Func<T?, Task> _execute;
+    private bool _isExecuting;
+
+    public event EventHandler? CanExecuteChanged;
+
+    public AsyncRelayCommand(Func<T?, Task> execute)
+    {
+        _execute = execute;
+    }
+
+    public bool CanExecute(object? parameter) => !_isExecuting;
+
+    public async void Execute(object? parameter)
+    {
+        if (_isExecuting) return;
+        _isExecuting = true;
+        CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+        try
+        {
+            await _execute(parameter is T t ? t : default);
         }
         finally
         {
