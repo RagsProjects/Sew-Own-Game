@@ -18,6 +18,7 @@
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
     <PackageReference Include="ReactiveUI" Version="22.3.1" />
+    <PackageReference Include="NetCoreAudio" Version="1.8.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,10 +26,20 @@
   </ItemGroup>
 
   <ItemGroup>
-    <AvaloniaResource Include="assets\**"/>
+    <AvaloniaResource Include="Assets\**"/>
   </ItemGroup>
 
   <ItemGroup Condition="'$(RuntimeIdentifier)' == 'win-x64' Or '$(RuntimeIdentifier)' == 'win-x86'">
-    <ApplicationIcon Include="assets\build\win\sogIcon.ico"/>
+    <ApplicationIcon Include="Assets\Build\Win\sogIcon.ico"/>
   </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Assets\SFX\clickSfx.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\SFX\popupSfx.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  
 </Project>

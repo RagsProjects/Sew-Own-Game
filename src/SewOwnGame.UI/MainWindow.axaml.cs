@@ -18,6 +18,7 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         DataContext = new MainWindowViewModel();
+        AddHandler(Button.ClickEvent, OnAnyButtonClick, RoutingStrategies.Bubble, handledEventsToo: true);
 
         WindowStartupLocation = WindowStartupLocation.CenterScreen;
         Topmost = true;
@@ -28,12 +29,12 @@ public partial class MainWindow : Window
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
             Icon = new WindowIcon(AssetLoader.Open(
-                new Uri("avares://SewOwnGame.UI/assets/build/win/sogIcon.ico")));
+                new Uri("avares://SewOwnGame.UI/Assets/Build/Win/sogIcon.ico")));
         }
         else
         {
             Icon = new WindowIcon(AssetLoader.Open(
-                new Uri("avares://SewOwnGame.UI/assets/ui/sogIcon.png")));
+                new Uri("avares://SewOwnGame.UI/Assets/UI/sogIcon.png")));
         }
     }
 
@@ -80,6 +81,16 @@ public partial class MainWindow : Window
             ThemeIcon.Text = "🌙";
             ThemeLabel.Text = "Dark Theme";
             ThemeSubLabel.Text = "Click me for Dark Theme!";
+        }
+    }
+
+    // ── Sound Effects ──────────────────────────────────────────────────
+
+    private void OnAnyButtonClick(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is MainWindowViewModel vm)
+        {
+            _ = vm.PlayClickAsync();
         }
     }
 }

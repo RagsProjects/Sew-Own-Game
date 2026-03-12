@@ -7,6 +7,7 @@
         Name="RootWindow"
         x:Class="SewOwnGame.UI.MainWindow"
         x:DataType="vm:MainWindowViewModel"
+        x:CompileBindings="True"
         Title="Sew Own Game"
         Width="1000" Height="600"
         MinWidth="600" MinHeight="400">
@@ -99,7 +100,7 @@
                         <Border Width="40" Height="40"
                                 CornerRadius="8"
                                 ToolTip.Tip="Sew Own Game">
-                            <Image Source="avares://SewOwnGame.UI/assets/ui/sogIcon.png"
+                            <Image Source="avares://SewOwnGame.UI/Assets/UI/sogIcon.png"
                                 Width="40"
                                 Height="40"
                                 Stretch="Uniform"/>
@@ -143,14 +144,15 @@
             </Border>
 
             <!-- ─── MAIN CONTENT ─── -->
-            <Grid Grid.Column="1" Margin="28,24,28,24">
+            <Grid Grid.Column="1" Margin="24,24,24,24">
                 <Grid RowDefinitions="Auto,Auto,*">
 
                     <!-- Header -->
-                    <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,12">
+                    <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,16">
                         <TextBlock Text="Projects"
                                    FontSize="22"
-                                   FontWeight="SemiBold"/>
+                                   FontWeight="SemiBold"
+                                   Foreground="#ffdd00"/>
                         <TextBlock Text="All game projects detected on system"
                                    FontSize="13"
                                    Foreground="Gray"/>

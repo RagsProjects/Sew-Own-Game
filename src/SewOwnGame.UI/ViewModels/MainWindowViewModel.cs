@@ -12,6 +12,7 @@ using Avalonia.Threading;
 using SewOwnGame.Core.Interfaces;
 using SewOwnGame.Core.Models;
 using SewOwnGame.Core.Services;
+using SewOwnGame.UI.Services;
 
 namespace SewOwnGame.UI.ViewModels;
 
@@ -24,6 +25,7 @@ public class MainWindowViewModel : ViewModelBase
     private bool _hasPermissionErrors;
     private bool _showInvalidFolderError;
     private bool _showRenameOverlay;
+    private readonly AudioService _audioService = new();
     private string _renameInputText = string.Empty;
     private string _renameErrorMessage = string.Empty;
     private string _permissionWarningMessage = string.Empty;
@@ -40,6 +42,7 @@ public class MainWindowViewModel : ViewModelBase
     private string _o3deEditorPath = string.Empty;
 
     public ObservableCollection<GameProject> Projects { get; }
+    public Task PlayClickAsync() => _audioService.PlayClickAsync();
     public bool IsEmpty => !_isLoading && Projects.Count == 0;
     public bool HasProjects => !_isLoading && Projects.Count > 0;
 
@@ -78,6 +81,7 @@ public class MainWindowViewModel : ViewModelBase
             {
                 _hasPermissionErrors = value;
                 OnPropertyChanged(nameof(HasPermissionErrors));
+                if (value) _ = _audioService.PlayPopupAsync();
             }
         }
     }
@@ -103,7 +107,6 @@ public class MainWindowViewModel : ViewModelBase
             if (_floatingErrorMessage != value)
             {
                 _floatingErrorMessage = value;
-                OnPropertyChanged(nameof(FloatingErrorMessage));
             }
         }
     }
@@ -130,6 +133,7 @@ public class MainWindowViewModel : ViewModelBase
             {
                 _showRenameOverlay = value;
                 OnPropertyChanged(nameof(ShowRenameOverlay));
+                if (value) _ = _audioService.PlayPopupAsync();
             }
         }
     }
