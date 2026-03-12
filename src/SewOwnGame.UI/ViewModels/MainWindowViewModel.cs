@@ -23,9 +23,13 @@ public class MainWindowViewModel : ViewModelBase
     private bool _isLoading;
     private bool _hasPermissionErrors;
     private bool _showInvalidFolderError;
+    private bool _showRenameOverlay;
+    private string _renameInputText = string.Empty;
+    private string _renameErrorMessage = string.Empty;
     private string _permissionWarningMessage = string.Empty;
     private string _floatingErrorMessage = string.Empty;
     private AppSettings _appSettings;
+    private GameProject? _projectBeingRenamed;
 
     //      Game Engines Paths      \\
     private string _unityEditorPath = string.Empty;
@@ -47,6 +51,8 @@ public class MainWindowViewModel : ViewModelBase
     public ICommand OpenInExplorerCommand { get; }
     public ICommand RenameProjectCommand { get; }
     public ICommand DeleteProjectCommand { get; }
+    public ICommand ConfirmRenameCommand { get; }
+    public ICommand CancelRenameCommand { get; }
     
     public bool IsLoading
     {
@@ -115,6 +121,49 @@ public class MainWindowViewModel : ViewModelBase
         }
     }
 
+    public bool ShowRenameOverlay
+    {
+        get => _showRenameOverlay;
+        set
+        {
+            if (_showRenameOverlay != value)
+            {
+                _showRenameOverlay = value;
+                OnPropertyChanged(nameof(ShowRenameOverlay));
+            }
+        }
+    }
+
+    public string RenameInputText
+    {
+        get => _renameInputText;
+        set
+        {
+            if (_renameInputText != value)
+            {
+                _renameInputText = value;
+                OnPropertyChanged(nameof(RenameInputText));
+                RenameErrorMessage = string.Empty;
+            }
+        }
+    }
+
+    public string RenameErrorMessage
+    {
+        get => _renameErrorMessage;
+        set
+        {
+            if(_renameErrorMessage != value)
+            {
+                _renameErrorMessage = value;
+                OnPropertyChanged(nameof(RenameErrorMessage));
+                OnPropertyChanged(nameof(HasRenameError));
+            }
+        }
+    }
+
+    public bool HasRenameError => !string.IsNullOrEmpty(_renameErrorMessage);
+
     private Task OpenGitHubIssuesAsync()
     {
         Process.Start(new ProcessStartInfo
@@ -148,7 +197,7 @@ public class MainWindowViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            FloatingErrorMessage = "A permission error occurred while scanning. Reopen SOG as admin or change folder permissions.";
+            FloatingErrorMessage = "A permission error occurred while scanning. Make sure your project folders have the correct permissions";
             ShowInvalidFolderError = true;
 
             /* This was supposed to be a crash log
@@ -245,7 +294,71 @@ public class MainWindowViewModel : ViewModelBase
 
     private Task RenameProjectAsync(GameProject? project)
     {
-        // Placeholder for future implementation
+        if (project == null) return Task.CompletedTask;
+
+        _projectBeingRenamed = project;
+        RenameInputText = project.Name;
+        RenameErrorMessage = string.Empty;
+        ShowRenameOverlay = true;
+
+        return Task.CompletedTask;
+    }
+
+    private Task ConfirmRenameAsync()
+    {
+        if (_projectBeingRenamed == null) return Task.CompletedTask;
+
+        // Validação: vazio
+        if (string.IsNullOrWhiteSpace(RenameInputText))
+        {
+            RenameErrorMessage = "Sorry, we can't rename to '" + RenameInputText + "' (blank name).";
+            return Task.CompletedTask;
+        }
+
+        // Validação: caracteres inválidos para nome de pasta
+        var invalidChars = System.IO.Path.GetInvalidFileNameChars();
+        if (RenameInputText.IndexOfAny(invalidChars) >= 0)
+        {
+            RenameErrorMessage = "Special characters are not allowed!";
+            return Task.CompletedTask;
+        }
+
+        try
+        {
+            var parentDir = System.IO.Path.GetDirectoryName(_projectBeingRenamed.Path);
+            if (parentDir == null) return Task.CompletedTask;
+
+            var newPath = System.IO.Path.Combine(parentDir, RenameInputText);
+
+            Directory.Move(_projectBeingRenamed.Path, newPath);
+
+            _projectBeingRenamed.Name = RenameInputText;
+            _projectBeingRenamed.Path = newPath;
+
+            // Força atualização da lista
+            var index = Projects.IndexOf(_projectBeingRenamed);
+            if (index >= 0)
+            {
+                Projects.RemoveAt(index);
+                Projects.Insert(index, _projectBeingRenamed);
+            }
+
+            ShowRenameOverlay = false;
+        }
+        catch (Exception ex)
+        {
+            RenameErrorMessage = $"Could not rename folder: {ex.Message}";
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private Task CancelRenameAsync()
+    {
+        ShowRenameOverlay = false;
+        RenameInputText = string.Empty;
+        RenameErrorMessage = string.Empty;
+        _projectBeingRenamed = null;
         return Task.CompletedTask;
     }
 
@@ -266,6 +379,8 @@ public class MainWindowViewModel : ViewModelBase
         OpenProjectCommand = new AsyncRelayCommand<GameProject>(OpenProjectAsync);
         OpenInExplorerCommand   = new AsyncRelayCommand<GameProject>(OpenInExplorerAsync);
         RenameProjectCommand    = new AsyncRelayCommand<GameProject>(RenameProjectAsync);
+        ConfirmRenameCommand = new AsyncCommand(ConfirmRenameAsync);
+        CancelRenameCommand = new AsyncCommand(CancelRenameAsync);
         DeleteProjectCommand    = new AsyncRelayCommand<GameProject>(DeleteProjectAsync);
         BrowseUnityEditorPathCommand = new AsyncCommand(BrowseUnityEditorPathAsync);
         Projects = new ObservableCollection<GameProject>();

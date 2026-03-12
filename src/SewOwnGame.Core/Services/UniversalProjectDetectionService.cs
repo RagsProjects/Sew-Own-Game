@@ -49,7 +49,7 @@ public class UniversalProjectDetectionService : IProjectDetectionService
             if (engine is UnityEngineSupport unityEngine && unityEngine.HasPermissionErrors)
             {
                 HasPermissionErrors = true;
-                PermissionWarningMessage =$"Make sure your {engine.EngineName} project path doesn't have high permissions, or reopen SOG as admin.";
+                PermissionWarningMessage =$"Make sure your {engine.EngineName} project folders have the correct permissions.";
             }
         }
 

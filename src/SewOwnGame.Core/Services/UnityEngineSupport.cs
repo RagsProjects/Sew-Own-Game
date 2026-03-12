@@ -14,10 +14,6 @@ public class UnityEngineSupport : IEngineSupport
 
     private static IEnumerable<string> SafeGetDirectories(string path)
     {
-        /* DON'T TOUCH THIS!!!
-        Or it will crash everytime it runs into a syslink
-        when searching for game projects folders*/
-        
         var result = new List<string>();
         var stack = new Stack<string>();
         stack.Push(path);
@@ -31,21 +27,20 @@ public class UnityEngineSupport : IEngineSupport
             {
                 subDirs = Directory.GetDirectories(current);
             }
-            catch (UnauthorizedAccessException) { continue; }
-            catch (IOException) { continue; }
+            catch (UnauthorizedAccessException ex) { Console.WriteLine($"[SKIP-AUTH] {current}: {ex.Message}"); continue; }
+            catch (IOException ex) { Console.WriteLine($"[SKIP-LINK] {current}: {ex.Message}"); continue; }
 
             foreach (var dir in subDirs)
             {
                 try
                 {
-                    var info = new DirectoryInfo(dir);
-                    if (info.Attributes.HasFlag(FileAttributes.ReparsePoint))
+                    if (Directory.ResolveLinkTarget(dir, false) != null)
                         continue;
                     
                     result.Add(dir);
                     stack.Push(dir);
                 }
-                catch (IOException) { continue; }
+                catch (IOException ex) { Console.WriteLine($"[SKIP-LINK] {dir}: {ex.Message}"); continue; }
             }
         }
 
@@ -206,6 +201,10 @@ public class UnityEngineSupport : IEngineSupport
     
     public async Task<bool> IsValidProjectAsync(string path)
     {
+        /* This fix a issue when trying to detect a project folder in a Virtual Machine with Linux
+        Not sure if it happens in any other occasion, but I'll fix it just to be sure */
+        path = path.TrimEnd(System.IO.Path.DirectorySeparatorChar, System.IO.Path.AltDirectorySeparatorChar);
+
         if (!Directory.Exists(path))
             return false;
             

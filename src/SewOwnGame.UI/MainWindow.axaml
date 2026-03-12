@@ -280,10 +280,24 @@
                                                                         </StackPanel>
                                                                     </Button>
 
+                                                                    <Button Command="{Binding #RootWindow.DataContext.RenameProjectCommand}"
+                                                                            CommandParameter="{Binding}"
+                                                                            Background="Transparent"
+                                                                            BorderThickness="0"
+                                                                            HorizontalAlignment="Stretch"
+                                                                            HorizontalContentAlignment="Left"
+                                                                            Padding="12,8"
+                                                                            Cursor="Hand">
+                                                                        <StackPanel Orientation="Horizontal" Spacing="10">
+                                                                            <TextBlock Text="✏️" FontSize="14"/>
+                                                                            <TextBlock Text="Rename" FontSize="13"/>
+                                                                        </StackPanel>
+                                                                    </Button>
+
                                                                     <Border Height="1"
                                                                             Background="Gray"
                                                                             Opacity="0.4"
-                                                                            Margin="0.2"/>
+                                                                            Margin="8,2"/>
 
                                                                     <Button Command="{Binding #RootWindow.DataContext.DeleteProjectCommand}"
                                                                             CommandParameter="{Binding}"
@@ -425,6 +439,81 @@
 
         </Grid>
         <!-- END OVERLAY -->
+
+        <!-- ════════════════════════════════════════════
+            OVERLAY: Rename Project
+            ════════════════════════════════════════════ -->
+        <Grid IsVisible="{Binding ShowRenameOverlay}">
+
+            <!-- Backdrop -->
+            <Border Background="#000000" Opacity="0.6"/>
+
+            <!-- Panel -->
+            <Border HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Width="440"
+                    Background="{DynamicResource SystemAccentColorDark1}"
+                    BorderBrush="{DynamicResource SystemAccentColorLight3}"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    Padding="24"
+                    BoxShadow="0 8 32 0 #80000000">
+
+                <StackPanel Spacing="16">
+
+                    <!-- Header -->
+                    <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                        <TextBlock Grid.Column="0"
+                                Text="Rename Project"
+                                FontSize="16"
+                                FontWeight="SemiBold"
+                                VerticalAlignment="Center"
+                                Foreground="#E8E8F5"/>
+
+                        <Button Grid.Column="1"
+                                Content="Cancel"
+                                Command="{Binding CancelRenameCommand}"
+                                Padding="16,8"
+                                CornerRadius="8"
+                                Cursor="Hand"
+                                Background="#C62828"
+                                Foreground="White"
+                                BorderThickness="0"/>
+
+                        <Button Grid.Column="2"
+                                Content="Rename"
+                                Command="{Binding ConfirmRenameCommand}"
+                                Padding="16,8"
+                                CornerRadius="8"
+                                Cursor="Hand"
+                                Background="#2E7D32"
+                                Foreground="White"
+                                BorderThickness="0"/>
+                    </Grid>
+
+                    <!-- Input -->
+                    <TextBox Text="{Binding RenameInputText}"
+                            FontSize="13"
+                            Padding="10,8"
+                            CornerRadius="8"
+                            Watermark="Project name..."/>
+
+                    <!-- Error message -->
+                    <Border IsVisible="{Binding HasRenameError}"
+                            Background="#B71C1C"
+                            CornerRadius="6"
+                            Padding="12,8">
+                        <TextBlock Text="{Binding RenameErrorMessage}"
+                                FontSize="12"
+                                Foreground="#FFCDD2"
+                                TextWrapping="Wrap"/>
+                    </Border>
+
+                </StackPanel>
+            </Border>
+
+        </Grid>
+        <!-- END RENAME OVERLAY -->
 
         <!-- ════════════════════════════════════════════
                 FLOATING ERROR: Invalid folder
