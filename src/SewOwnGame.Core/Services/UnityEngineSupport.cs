@@ -241,16 +241,15 @@ public class UnityEngineSupport : IEngineSupport
         {
             var versionFile = Path.Combine(projectPath, "ProjectSettings", "ProjectVersion.txt");
             
-            if (File.Exists(versionFile))
+            if (!File.Exists(versionFile))
             {
-                var lines = File.ReadAllLines(versionFile);
-                foreach (var line in lines)
-                {
-                    if (line.StartsWith("m_EditorVersion:"))
-                    {
-                        return line.Split(':')[1].Trim();
-                    }
-                }
+                return string.Empty;
+            }
+
+            foreach (var line in File.ReadAllLines(versionFile))
+            {
+                if (line.StartsWith("m_EditorVersion:"))
+                    return line.Split(':', 2)[1].Trim();
             }
         }
         catch
@@ -258,7 +257,7 @@ public class UnityEngineSupport : IEngineSupport
             // Ignore errors
         }
         
-        return "Unknown";
+        return string.Empty;
     }
     
     private long CalculateDirectorySize(DirectoryInfo directory)

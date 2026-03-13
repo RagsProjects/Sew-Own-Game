@@ -538,7 +538,8 @@
                                 FontSize="13"
                                 FontWeight="SemiBold"
                                 Foreground="#EEEEEE"
-                                TextWrapping="Wrap"/>
+                                TextWrapping="Wrap"
+                                MinHeight="20"/>
                         <StackPanel Orientation="Horizontal" Spacing="4">
                             <TextBlock Text="If you think this is a mistake,"
                                     FontSize="12"

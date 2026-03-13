@@ -104,10 +104,8 @@ public class MainWindowViewModel : ViewModelBase
         get => _floatingErrorMessage;
         set
         {
-            if (_floatingErrorMessage != value)
-            {
-                _floatingErrorMessage = value;
-            }
+            _floatingErrorMessage = value;
+            OnPropertyChanged(nameof(FloatingErrorMessage));
         }
     }
 
@@ -243,6 +241,13 @@ public class MainWindowViewModel : ViewModelBase
     {
         if (project == null) return Task.CompletedTask;
 
+        if (string.IsNullOrEmpty(project.EngineVersion))
+        {
+            FloatingErrorMessage = $"Could not detect the Unity version for \"{project.Name}\". Make sure ProjectSettings/ProjectVersion.txt exists.";
+            ShowInvalidFolderError = true;
+            return Task.CompletedTask;
+        }
+
         string executablePath;
 
         if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -258,6 +263,13 @@ public class MainWindowViewModel : ViewModelBase
             executablePath = Path.Combine(_unityEditorPath, project.EngineVersion, "Editor", "Unity");
         }
 
+        if (!File.Exists(executablePath))
+        {
+            FloatingErrorMessage = $"Unity {project.EngineVersion} not found at \"{executablePath}\". Check the Editor Path in Settings.";
+            ShowInvalidFolderError = true;
+            return Task.CompletedTask;
+        }
+
         try
         {
             Process.Start(new ProcessStartInfo
@@ -269,7 +281,7 @@ public class MainWindowViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            FloatingErrorMessage = $"Could not open Unity editor. Check the Editor Path in Settings -> Unity Settings.\n{ex.Message}";
+            FloatingErrorMessage = $"Could not open Unity editor: {ex.Message}";
             ShowInvalidFolderError = true;
         }
 

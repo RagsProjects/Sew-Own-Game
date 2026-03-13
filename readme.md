@@ -79,6 +79,22 @@ If you're interested in adding support for other engines, we'd love your contrib
 - Windows 7+, macOS 10.15+, or Linux (kernel 4.15+)
 - Game engine installation (automatically detected)
 
+### Dependencies
+#### Linux
+Before running SOG, install the required dependencies:
+```bash
+chmod +x scripts/install-deps.sh
+./scripts/install-deps.sh
+```
+
+| Package | Purpose |
+|---|---|
+| `mpg123` | Audio playback |
+| `dbus-x11` | Folder picker dialog |
+
+#### Windows / macOS
+No additional dependencies required... for now
+
 ### Download
 
 **[📥 Download Latest Version](https://github.com/RagsProjects/Sew-Own-Game/releases/latest)**
