@@ -1,537 +1,576 @@
-using System;
-using System.Runtime.InteropServices;
-using System.IO;
-using System.Linq;
-using System.Diagnostics;
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Platform.Storage;
-using Avalonia.Threading;
-using SewOwnGame.Core.Interfaces;
-using SewOwnGame.Core.Models;
-using SewOwnGame.Core.Services;
-using SewOwnGame.UI.Services;
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:SewOwnGame.UI.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="600"
+        Name="RootWindow"
+        x:Class="SewOwnGame.UI.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        x:CompileBindings="True"
+        Title="Sew Own Game"
+        Width="1000" Height="600"
+        MinWidth="600" MinHeight="400">
 
-namespace SewOwnGame.UI.ViewModels;
+    <Window.Styles>
 
-public class MainWindowViewModel : ViewModelBase
-{
-    private readonly IProjectDetectionService _projectDetectionService;
-    private readonly SettingsService _settingsService;
+        <Style Selector="Button.sidebar-btn">
+            <Setter Property="Width" Value="32"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <Style Selector="Button.sidebar-btn:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SidebarHoverBg}"/>
+        </Style>
+        <Style Selector="Button.sidebar-btn:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SidebarHoverBg}"/>
+        </Style>
 
-    private bool _isLoading;
-    private bool _hasPermissionErrors;
-    private bool _showInvalidFolderError;
-    private bool _showRenameOverlay;
-    private readonly AudioService _audioService = new();
-    private string _renameInputText = string.Empty;
-    private string _renameErrorMessage = string.Empty;
-    private string _permissionWarningMessage = string.Empty;
-    private string _floatingErrorMessage = string.Empty;
-    private AppSettings _appSettings;
-    private GameProject? _projectBeingRenamed;
+        <Style Selector="Button.sidebar-btn.active /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SidebarHoverBg}"/>
+        </Style>
 
-    //      Game Engines Paths      \\
-    private string _unityEditorPath = string.Empty;
-    private string _unrealEditorPath = string.Empty;
-    private string _godotEditorPath = string.Empty;
-    private string _gmEditorPath = string.Empty;
-    private string _strideEditorPath = string.Empty;
-    private string _o3deEditorPath = string.Empty;
+        <Style Selector="Button.settings-action-btn">
+            <Setter Property="Padding" Value="12"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        </Style>
 
-    public ObservableCollection<GameProject> Projects { get; }
-    public Task PlayClickAsync() => _audioService.PlayClickAsync();
-    public bool IsEmpty => !_isLoading && Projects.Count == 0;
-    public bool HasProjects => !_isLoading && Projects.Count > 0;
+        <Style Selector="Button.theme-toggle-btn">
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Padding" Value="12,0"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource CloseButtonBorder}"/>
+            <Setter Property="Background" Value="{DynamicResource CloseButtonBackground}"/>
+            <Setter Property="Foreground" Value="{DynamicResource CloseButtonForeground}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        </Style>
+        <Style Selector="Button.theme-toggle-btn:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SystemAccentColorDark3}"/>
+        </Style>
 
-    public ICommand ScanProjectsCommand { get; }
-    public ICommand ImportProjectCommand { get; }
-    public ICommand OpenGitHubIssuesCommand { get; }
-    public ICommand DismissInvalidFolderErrorCommand { get; }
-    public ICommand OpenProjectCommand { get; }
-    public ICommand OpenInExplorerCommand { get; }
-    public ICommand RenameProjectCommand { get; }
-    public ICommand DeleteProjectCommand { get; }
-    public ICommand ConfirmRenameCommand { get; }
-    public ICommand CancelRenameCommand { get; }
-    
-    public bool IsLoading
-    {
-        get => _isLoading;
-        set
-        {
-            if (_isLoading != value)
-            {
-                _isLoading = value;
-                OnPropertyChanged(nameof(IsLoading));
-                OnPropertyChanged(nameof(IsEmpty));
-                OnPropertyChanged(nameof(HasProjects));
-            }
-        }
-    }
+        <Style Selector="Button.overlay-close">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+        </Style>
+        <Style Selector="Button.overlay-close /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+        <Style Selector="Button.overlay-close:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+        <Style Selector="Button.overlay-close:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
 
-    public bool HasPermissionErrors
-    {
-        get => _hasPermissionErrors;
-        set
-        {
-            if (_hasPermissionErrors != value)
-            {
-                _hasPermissionErrors = value;
-                OnPropertyChanged(nameof(HasPermissionErrors));
-                if (value) _ = _audioService.PlayPopupAsync();
-            }
-        }
-    }
+    </Window.Styles>
 
-    public string PermissionWarningMessage
-    {
-        get => _permissionWarningMessage;
-        set
-        {
-            if (_permissionWarningMessage != value)
-            {
-                _permissionWarningMessage = value;
-                OnPropertyChanged(nameof(PermissionWarningMessage));
-            }
-        }
-    }
+    <Grid>
 
-    public string FloatingErrorMessage
-    {
-        get => _floatingErrorMessage;
-        set
-        {
-            if (_floatingErrorMessage != value)
-            {
-                _floatingErrorMessage = value;
-            }
-        }
-    }
+        <!-- ════════════════════════════════════════════
+             MAIN LAYOUT: Sidebar + Content
+             ════════════════════════════════════════════ -->
+        <Grid ColumnDefinitions="48,*">
 
-    public bool ShowInvalidFolderError
-    {
-        get => _showInvalidFolderError;
-        set
-        {
-            if (_showInvalidFolderError != value)
-            {
-                _showInvalidFolderError = value;
-                OnPropertyChanged(nameof(ShowInvalidFolderError));
-            }
-        }
-    }
+            <!-- ─── SIDEBAR ─── -->
+            <Border Grid.Column="0"
+                    Background="{DynamicResource SidebarActiveBg}"
+                    BorderBrush="{DynamicResource SystemAccentColorDark3}"
+                    BorderThickness="0,0,1,0">
 
-    public bool ShowRenameOverlay
-    {
-        get => _showRenameOverlay;
-        set
-        {
-            if (_showRenameOverlay != value)
-            {
-                _showRenameOverlay = value;
-                OnPropertyChanged(nameof(ShowRenameOverlay));
-                if (value) _ = _audioService.PlayPopupAsync();
-            }
-        }
-    }
+                <DockPanel LastChildFill="False">
 
-    public string RenameInputText
-    {
-        get => _renameInputText;
-        set
-        {
-            if (_renameInputText != value)
-            {
-                _renameInputText = value;
-                OnPropertyChanged(nameof(RenameInputText));
-                RenameErrorMessage = string.Empty;
-            }
-        }
-    }
+                    <StackPanel DockPanel.Dock="Top"
+                                HorizontalAlignment="Center"
+                                Margin="0,14,0,18">
+                        <Border Width="40" Height="40"
+                                CornerRadius="8"
+                                ToolTip.Tip="Sew Own Game">
+                            <Image Source="avares://SewOwnGame.UI/Assets/UI/sogIcon.png"
+                                Width="40"
+                                Height="40"
+                                Stretch="Uniform"/>
+                        </Border>
+                    </StackPanel>
 
-    public string RenameErrorMessage
-    {
-        get => _renameErrorMessage;
-        set
-        {
-            if(_renameErrorMessage != value)
-            {
-                _renameErrorMessage = value;
-                OnPropertyChanged(nameof(RenameErrorMessage));
-                OnPropertyChanged(nameof(HasRenameError));
-            }
-        }
-    }
+                    <Border DockPanel.Dock="Top"
+                            Height="1"
+                            Background="{DynamicResource SidebarActiveBg}"
+                            Margin="8,0"/>
 
-    public bool HasRenameError => !string.IsNullOrEmpty(_renameErrorMessage);
+                    <StackPanel DockPanel.Dock="Top"
+                                Margin="8,8,8,0"
+                                Spacing="4">
+                        <Button Classes="sidebar-btn active"
+                                ToolTip.Tip="Projects">
+                            <TextBlock Text="📁"
+                                       FontSize="16"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+                        </Button>
+                    </StackPanel>
 
-    private Task OpenGitHubIssuesAsync()
-    {
-        Process.Start(new ProcessStartInfo
-        {
-            FileName = "https://github.com/RagsProjects/Sew-Own-Game/issues/new/choose",
-            UseShellExecute = true
-        });
-        return Task.CompletedTask;
-    }
+                    <StackPanel DockPanel.Dock="Bottom"
+                                Margin="8,8,8,8"
+                                Spacing="4">
+                        <Button Classes="sidebar-btn"
+                                Name="SettingsButton"
+                                ToolTip.Tip="Settings"
+                                Click="OnSettingsClick">
+                            <TextBlock Name="SettingsIcon"
+                                       Text="⚙"
+                                       FontSize="16"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       Foreground="{DynamicResource SidebarSettingsIcon}"/>
+                        </Button>
+                    </StackPanel>
 
-    private async Task ScanProjectsAsync()
-    {
-        IsLoading = true;
-        Projects.Clear();
-        HasPermissionErrors = false;
+                </DockPanel>
+            </Border>
 
-        try
-        {
-            var detectedProjects = await Task.Run(async () => await _projectDetectionService.DetectProjectsAsync());
+            <!-- ─── MAIN CONTENT ─── -->
+            <Grid Grid.Column="1" Margin="24,24,24,24">
+                <Grid RowDefinitions="Auto,Auto,*">
 
-            if (_projectDetectionService is UniversalProjectDetectionService universalService && universalService.HasPermissionErrors)
-            {
-                HasPermissionErrors = true;
-                PermissionWarningMessage = universalService.PermissionWarningMessage;
-            }
+                    <!-- Header -->
+                    <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,16">
+                        <TextBlock Text="Projects"
+                                   FontSize="22"
+                                   FontWeight="SemiBold"
+                                   Foreground="#ffdd00"/>
+                        <TextBlock Text="All game projects detected on system"
+                                   FontSize="13"
+                                   Foreground="Gray"/>
+                        <Button Content="Search Projects"
+                                Command="{Binding ScanProjectsCommand}"
+                                IsEnabled="{Binding !IsLoading}"
+                                Foreground="{DynamicResource CloseButtonForeground}"
+                                Background="{DynamicResource CloseButtonBackground}"
+                                Margin="0,10,0,0"
+                                Padding="16,8"/>
+                        <Button Content="Select Project Folder"
+                                Command="{Binding ImportProjectCommand}"
+                                IsEnabled="{Binding !IsLoading}"
+                                Foreground="{DynamicResource CloseButtonForeground}"
+                                Background="{DynamicResource CloseButtonBackground}"
+                                Margin="0,8,0,0"
+                                Padding="16,8"/>
+                    </StackPanel>
 
-            foreach (var project in detectedProjects)
-            {
-                Projects.Add(project);
-            }
-        }
-        catch (Exception ex)
-        {
-            FloatingErrorMessage = "A permission error occurred while scanning. Make sure your project folders have the correct permissions";
-            ShowInvalidFolderError = true;
+                    <!-- Permission warning -->
+                    <Border Grid.Row="1"
+                            IsVisible="{Binding HasPermissionErrors}"
+                            Background="#FFF3CD"
+                            CornerRadius="6"
+                            Padding="12"
+                            Margin="0,0,0,12">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="⚠️ Permission Warning"
+                                       FontSize="13"
+                                       FontWeight="SemiBold"
+                                       Foreground="#856404"/>
+                            <TextBlock Text="{Binding PermissionWarningMessage}"
+                                       FontSize="12"
+                                       Foreground="#856404"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
 
-            /* This was supposed to be a crash log
-            but this catch itself fix the crashing
-            so it will dignose the crash in terminal
-            even if it doesn't crash. I'll leave it here because it may be useful someday*/
-            Console.WriteLine($"[CRASH] {ex.GetType().FullName}: {ex.Message}");
-            Console.WriteLine($"[STACK] {ex.StackTrace}");
-            if (ex.InnerException != null)
-            {
-                Console.WriteLine($"[INNER] {ex.InnerException.GetType().FullName}: {ex.InnerException.Message}");
-            }
-        }
-        finally
-        {
-            IsLoading = false;
-        }
-    }
+                    <!-- Projects List -->
+                    <Border Grid.Row="2"
+                            BorderBrush="LightGray"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="12">
+                        <Grid>
 
-    private async Task BrowseUnityEditorPathAsync()
-    {
-        var lifetime = Avalonia.Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
-        var mainWindow = lifetime?.MainWindow;
-        if (mainWindow == null) return;
+                            <!-- Loading -->
+                            <TextBlock Text="Scanning Projects..."
+                                       IsVisible="{Binding IsLoading}"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       FontSize="14"
+                                       Foreground="Gray"/>
 
-        var folders = await mainWindow.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
-        {
-            Title = "Select Unity Editor Folder",
-            AllowMultiple = false
-        });
+                            <!-- Empty state -->
+                            <StackPanel IsVisible="{Binding IsEmpty}"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Spacing="8">
+                                <TextBlock Text="🎮"
+                                           FontSize="40"
+                                           HorizontalAlignment="Center"/>
+                                <TextBlock Text="No project found! Click 'import project' to manually find it"
+                                           FontSize="15"
+                                           Foreground="Gray"
+                                           HorizontalAlignment="Center"/>
+                                <TextBlock Text="Click in 'Search Projects' to start!"
+                                           FontSize="12"
+                                           Foreground="Gray"
+                                           HorizontalAlignment="Center"/>
+                            </StackPanel>
 
-        if (folders.Count > 0)
-        {
-            UnityEditorPath = folders[0].Path.LocalPath;
-        }
-    }
+                            <!-- Project items -->
+                            <ScrollViewer IsVisible="{Binding HasProjects}">
+                                <ItemsControl ItemsSource="{Binding Projects}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border BorderBrush="LightGray"
+                                                    BorderThickness="0,0,0,1"
+                                                    Margin="0,0,0,2">
+                                                <Grid ColumnDefinitions="*, Auto">
+                                                    <Button Grid.Column="0"
+                                                            Command="{Binding #RootWindow.DataContext.OpenProjectCommand}"
+                                                            CommandParameter="{Binding}"
+                                                            Background="Transparent"
+                                                            BorderThickness="0"
+                                                            HorizontalAlignment="Stretch"
+                                                            HorizontalContentAlignment="Left"
+                                                            Padding="10"
+                                                            Cursor="Hand">
+                                                        <StackPanel Spacing="4">
+                                                            <TextBlock Text="{Binding Name}"
+                                                                    FontSize="15"
+                                                                    FontWeight="SemiBold"/>
+                                                            <TextBlock Text="{Binding Path}"
+                                                                    FontSize="11"
+                                                                    Foreground="Gray"/>
+                                                            <StackPanel Orientation="Horizontal" Spacing="16">
+                                                                <TextBlock Text="{Binding EngineType, StringFormat='Engine: {0}'}"
+                                                                        FontSize="11"/>
+                                                                <TextBlock Text="{Binding EngineVersion, StringFormat='Version: {0}'}"
+                                                                        FontSize="11"/>
+                                                                <TextBlock Text="{Binding DisplaySize}"
+                                                                        FontSize="11"/>
+                                                            </StackPanel>
+                                                        </StackPanel>
+                                                    </Button>
 
-    private Task OpenProjectAsync(GameProject? project)
-    {
-        if (project == null) return Task.CompletedTask;
+                                                    <Button Grid.Column="1"
+                                                            Content="•••"
+                                                            Background="Transparent"
+                                                            BorderThickness="0"
+                                                            VerticalAlignment="Center"
+                                                            Padding="12,8"
+                                                            Cursor="Hand"
+                                                            FontSize="16">
+                                                        <Button.Flyout>
+                                                            <Flyout Placement="BottomEdgeAlignedRight">
+                                                                <StackPanel MinWidth="100" Spacing="2">
+                                                                    <Button Command="{Binding #RootWindow.DataContext.OpenInExplorerCommand}"
+                                                                            CommandParameter="{Binding}"
+                                                                            Background="Transparent"
+                                                                            BorderThickness="0"
+                                                                            HorizontalAlignment="Stretch"
+                                                                            HorizontalContentAlignment="Left"
+                                                                            Padding="12,8"
+                                                                            Cursor="Hand">
+                                                                        <StackPanel Orientation="Horizontal" Spacing="10">
+                                                                            <TextBlock Text="📂" FontSize="14"/>
+                                                                            <TextBlock Text="Open in Explorer" FontSize="13"/>
+                                                                        </StackPanel>
+                                                                    </Button>
 
-        string executablePath;
+                                                                    <Button Command="{Binding #RootWindow.DataContext.RenameProjectCommand}"
+                                                                            CommandParameter="{Binding}"
+                                                                            Background="Transparent"
+                                                                            BorderThickness="0"
+                                                                            HorizontalAlignment="Stretch"
+                                                                            HorizontalContentAlignment="Left"
+                                                                            Padding="12,8"
+                                                                            Cursor="Hand">
+                                                                        <StackPanel Orientation="Horizontal" Spacing="10">
+                                                                            <TextBlock Text="✏️" FontSize="14"/>
+                                                                            <TextBlock Text="Rename" FontSize="13"/>
+                                                                        </StackPanel>
+                                                                    </Button>
 
-        if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            executablePath = Path.Combine(_unityEditorPath, project.EngineVersion, "Editor", "Unity.exe");
-        }
-        else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-        {
-            executablePath = Path.Combine(_unityEditorPath, project.EngineVersion, "Unity.app", "Contents", "MacOS", "Unity");
-        }
-        else
-        {
-            executablePath = Path.Combine(_unityEditorPath, project.EngineVersion, "Editor", "Unity");
-        }
+                                                                    <Border Height="1"
+                                                                            Background="Gray"
+                                                                            Opacity="0.4"
+                                                                            Margin="8,2"/>
 
-        try
-        {
-            Process.Start(new ProcessStartInfo
-            {
-                FileName = executablePath,
-                Arguments = $"-projectPath \"{project.Path}\"",
-                UseShellExecute = true
-            });
-        }
-        catch (Exception ex)
-        {
-            FloatingErrorMessage = $"Could not open Unity editor. Check the Editor Path in Settings -> Unity Settings.\n{ex.Message}";
-            ShowInvalidFolderError = true;
-        }
+                                                                    <Button Command="{Binding #RootWindow.DataContext.DeleteProjectCommand}"
+                                                                            CommandParameter="{Binding}"
+                                                                            Background="Transparent"
+                                                                            BorderThickness="0"
+                                                                            HorizontalAlignment="Stretch"
+                                                                            HorizontalContentAlignment="Left"
+                                                                            Padding="12,8"
+                                                                            Cursor="Hand">
+                                                                        <StackPanel Orientation="Horizontal" Spacing="10">
+                                                                            <TextBlock Text="🗑️" FontSize="14" Foreground="#E53935"/>
+                                                                            <TextBlock Text="Delete" FontSize="13" Foreground="#E53935"/>
+                                                                        </StackPanel>
+                                                                    </Button>
+                                                                </StackPanel>
+                                                            </Flyout>
+                                                        </Button.Flyout>
+                                                    </Button>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
 
-        return Task.CompletedTask;
-    }
+                        </Grid>
+                    </Border>
 
-    private Task OpenInExplorerAsync(GameProject? project)
-    {
-        if (project == null) return Task.CompletedTask;
+                </Grid>
+            </Grid>
 
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            Process.Start("explorer.exe", project.Path);
-        }
-        else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-        {
-            Process.Start("open", project.Path);
-        }
-        else
-        {
-            Process.Start("xdg-open", project.Path);
-        }
+        </Grid>
+        <!-- END MAIN LAYOUT -->
 
-        return Task.CompletedTask;
-    }
 
-    private Task RenameProjectAsync(GameProject? project)
-    {
-        if (project == null) return Task.CompletedTask;
+        <!-- ════════════════════════════════════════════
+             OVERLAY: dim backdrop + settings panel
+             ════════════════════════════════════════════ -->
+        <Grid Name="SettingsOverlay"
+              IsVisible="False">
 
-        _projectBeingRenamed = project;
-        RenameInputText = project.Name;
-        RenameErrorMessage = string.Empty;
-        ShowRenameOverlay = true;
+            <Border Background="#000000"
+                    Opacity="0.55"
+                    Name="OverlayBackdrop"/>
+            <Button Classes="overlay-close"
+                    Click="OnOverlayBackdropClick"/>
 
-        return Task.CompletedTask;
-    }
+            <Border Name="SettingsPanel"
+                    Width="320"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Stretch"
+                    Margin="64,0,0,0"
+                    Background="{DynamicResource SystemAccentColorDark1}"
+                    BorderBrush="{DynamicResource SystemAccentColorLight3}"
+                    BorderThickness="0,0,1,0"
+                    BoxShadow="4 0 24 0 #40000000">
 
-    private Task ConfirmRenameAsync()
-    {
-        if (_projectBeingRenamed == null) return Task.CompletedTask;
+                <Grid RowDefinitions="Auto,*,Auto" Margin="20,24,20,20">
 
-        // Validação: vazio
-        if (string.IsNullOrWhiteSpace(RenameInputText))
-        {
-            RenameErrorMessage = "Sorry, we can't rename to '" + RenameInputText + "' (blank name).";
-            return Task.CompletedTask;
-        }
+                    <StackPanel Grid.Row="0" Spacing="2" Margin="0,0,0,20">
+                        <TextBlock Text="Settings"
+                                   FontSize="17"
+                                   FontWeight="SemiBold"
+                                   Foreground="#ffdd00"/>
+                        <Border Height="1"
+                                Background="#aaaaaa"
+                                Margin="0,10,0,0"/>
+                    </StackPanel>
 
-        // Validação: caracteres inválidos para nome de pasta
-        var invalidChars = System.IO.Path.GetInvalidFileNameChars();
-        if (RenameInputText.IndexOfAny(invalidChars) >= 0)
-        {
-            RenameErrorMessage = "Special characters are not allowed!";
-            return Task.CompletedTask;
-        }
+                    <StackPanel Grid.Row="1" Spacing="24">
 
-        try
-        {
-            var parentDir = System.IO.Path.GetDirectoryName(_projectBeingRenamed.Path);
-            if (parentDir == null) return Task.CompletedTask;
+                        <StackPanel Spacing="10">
+                            <TextBlock Text="Interface Theme"
+                                       FontSize="12"
+                                       FontWeight="SemiBold"
+                                       Foreground="#ffffff"
+                                       LetterSpacing="1"/>
 
-            var newPath = System.IO.Path.Combine(parentDir, RenameInputText);
+                            <Button Name="ThemeToggleButton"
+                                    Classes="theme-toggle-btn"
+                                    Click="OnThemeToggleClick">
+                                <StackPanel Orientation="Horizontal" Spacing="12">
+                                    <TextBlock Name="ThemeIcon"
+                                               Text="☀️"
+                                               FontSize="18"
+                                               VerticalAlignment="Center"/>
+                                    <StackPanel Spacing="1" VerticalAlignment="Center">
+                                        <TextBlock Name="ThemeLabel"
+                                                   Text="Light Theme"
+                                                   FontSize="13"
+                                                   FontWeight="Medium"
+                                                   Foreground="{DynamicResource CloseButtonText}"/>
+                                        <TextBlock Name="ThemeSubLabel"
+                                                   Text="Click me for Light Theme!"
+                                                   FontSize="10"
+                                                   Foreground="#aaaaaa"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                        <!-- Unity Engine -->
+                        <StackPanel Spacing="10">
+                            <TextBlock Text="Unity Engine"
+                                    FontSize="12"
+                                    FontWeight="SemiBold"
+                                    Foreground="#ffffff"
+                                    LetterSpacing="1"/>
 
-            Directory.Move(_projectBeingRenamed.Path, newPath);
+                            <TextBlock Text="Editor Path"
+                                    FontSize="12"
+                                    Foreground="#E8E8F5"/>
 
-            _projectBeingRenamed.Name = RenameInputText;
-            _projectBeingRenamed.Path = newPath;
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                <TextBox Grid.Column="0"
+                                        Text="{Binding UnityEditorPath}"
+                                        FontSize="12"
+                                        VerticalContentAlignment="Center"/>
+                                <Button Grid.Column="1"
+                                        Content="Browse"
+                                        Command="{Binding BrowseUnityEditorPathCommand}"
+                                        Padding="12,8"
+                                        CornerRadius="8"
+                                        Cursor="Hand"/>
+                            </Grid>
+                        </StackPanel>
+                        <!-- Add more items to settings list here -->
+                    </StackPanel>
 
-            // Força atualização da lista
-            var index = Projects.IndexOf(_projectBeingRenamed);
-            if (index >= 0)
-            {
-                Projects.RemoveAt(index);
-                Projects.Insert(index, _projectBeingRenamed);
-            }
+                    <Button Grid.Row="2"
+                            Classes="close-btn"
+                            Content="Close"
+                            HorizontalAlignment="Right"
+                            Padding="16,8"
+                            CornerRadius="8"
+                            Click="OnSettingsClick"/>
 
-            ShowRenameOverlay = false;
-        }
-        catch (Exception ex)
-        {
-            RenameErrorMessage = $"Could not rename folder: {ex.Message}";
-        }
+                </Grid>
+            </Border>
 
-        return Task.CompletedTask;
-    }
+        </Grid>
+        <!-- END OVERLAY -->
 
-    private Task CancelRenameAsync()
-    {
-        ShowRenameOverlay = false;
-        RenameInputText = string.Empty;
-        RenameErrorMessage = string.Empty;
-        _projectBeingRenamed = null;
-        return Task.CompletedTask;
-    }
+        <!-- ════════════════════════════════════════════
+            OVERLAY: Rename Project
+            ════════════════════════════════════════════ -->
+        <Grid IsVisible="{Binding ShowRenameOverlay}">
 
-    private Task DeleteProjectAsync(GameProject? project)
-    {
-        if (project == null) return Task.CompletedTask;
-        Projects.Remove(project);
-        return Task.CompletedTask;
-    }
-    
-    public MainWindowViewModel()
-    {
-        _settingsService = new SettingsService();
-        _appSettings = _settingsService.Load();
-        _unityEditorPath = _appSettings.UnityEditorPath;
-        _projectDetectionService = new UniversalProjectDetectionService();
+            <!-- Backdrop -->
+            <Border Background="#000000" Opacity="0.6"/>
 
-        OpenProjectCommand = new AsyncRelayCommand<GameProject>(OpenProjectAsync);
-        OpenInExplorerCommand   = new AsyncRelayCommand<GameProject>(OpenInExplorerAsync);
-        RenameProjectCommand    = new AsyncRelayCommand<GameProject>(RenameProjectAsync);
-        ConfirmRenameCommand = new AsyncCommand(ConfirmRenameAsync);
-        CancelRenameCommand = new AsyncCommand(CancelRenameAsync);
-        DeleteProjectCommand    = new AsyncRelayCommand<GameProject>(DeleteProjectAsync);
-        BrowseUnityEditorPathCommand = new AsyncCommand(BrowseUnityEditorPathAsync);
-        Projects = new ObservableCollection<GameProject>();
+            <!-- Panel -->
+            <Border HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Width="440"
+                    Background="{DynamicResource SystemAccentColorDark1}"
+                    BorderBrush="{DynamicResource SystemAccentColorLight3}"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    Padding="24"
+                    BoxShadow="0 8 32 0 #80000000">
 
-        Projects.CollectionChanged += (_, _) =>
-        {
-            OnPropertyChanged(nameof(IsEmpty));
-            OnPropertyChanged(nameof(HasProjects));
-        };
-        
-        ScanProjectsCommand = new AsyncCommand(ScanProjectsAsync);
-        ImportProjectCommand = new AsyncCommand(ImportProjectAsync);
-        OpenGitHubIssuesCommand = new AsyncCommand(OpenGitHubIssuesAsync);
-        
-        DismissInvalidFolderErrorCommand = new AsyncCommand(() => 
-        {
-            ShowInvalidFolderError = false;
-            return Task.CompletedTask;
-        });
-    }
+                <StackPanel Spacing="16">
 
-    // Game Engines Proprieties
-    public string UnityEditorPath
-    {
-        get => _unityEditorPath;
-        set
-        {
-            if (_unityEditorPath != value)
-            {
-                _unityEditorPath = value;
-                OnPropertyChanged(nameof(UnityEditorPath));
-                _appSettings.UnityEditorPath = value;
-                _settingsService.Save(_appSettings);
-            }
-        }
-    }
+                    <!-- Header -->
+                    <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                        <TextBlock Grid.Column="0"
+                                Text="Rename Project"
+                                FontSize="16"
+                                FontWeight="SemiBold"
+                                VerticalAlignment="Center"
+                                Foreground="#E8E8F5"/>
 
-    public ICommand BrowseUnityEditorPathCommand { get; }
+                        <Button Grid.Column="1"
+                                Content="Cancel"
+                                Command="{Binding CancelRenameCommand}"
+                                Padding="16,8"
+                                CornerRadius="8"
+                                Cursor="Hand"
+                                Background="#C62828"
+                                Foreground="White"
+                                BorderThickness="0"/>
 
-    private async Task ImportProjectAsync()
-    {
-        ShowInvalidFolderError = false;
+                        <Button Grid.Column="2"
+                                Content="Rename"
+                                Command="{Binding ConfirmRenameCommand}"
+                                Padding="16,8"
+                                CornerRadius="8"
+                                Cursor="Hand"
+                                Background="#2E7D32"
+                                Foreground="White"
+                                BorderThickness="0"/>
+                    </Grid>
 
-        var lifetime = Avalonia.Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
-        var mainWindow = lifetime?.MainWindow;
-        
-        if (mainWindow == null) return;
-        
-        var folders = await mainWindow.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
-        {
-            Title = "Select Game Project Folder",
-            AllowMultiple = false
-        });
-        
-        if (folders.Count > 0)
-        {
-            var folderPath = folders[0].Path.LocalPath;
-            
-            IsLoading = true;
-            
-            try
-            {
-                var project = await _projectDetectionService.LoadProjectAsync(folderPath);
-                
-                if (project != null)
-                {
-                    // Verify if is already on the list
-                    if (!Projects.Any(p => p.Path == project.Path))
-                    {
-                        Projects.Add(project);
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Not a valid game project folder!");
-                    FloatingErrorMessage = "Not a valid game project folder!";
-                    ShowInvalidFolderError = true;
-                }
-            }
-            finally
-            {
-                IsLoading = false;
-            }
-        }
-    }
-}
+                    <!-- Input -->
+                    <TextBox Text="{Binding RenameInputText}"
+                            FontSize="13"
+                            Padding="10,8"
+                            CornerRadius="8"
+                            Watermark="Project name..."/>
 
-public class AsyncCommand : ICommand
-{
-    private readonly Func<Task> _execute;
-    private bool _isExecuting;
-    
-    public event EventHandler? CanExecuteChanged;
-    
-    public AsyncCommand(Func<Task> execute)
-    {
-        _execute = execute;
-    }
-    
-    public bool CanExecute(object? parameter) => !_isExecuting;
-    
-    public async void Execute(object? parameter)
-    {
-        if (_isExecuting) return;
-        
-        _isExecuting = true;
-        CanExecuteChanged?.Invoke(this, EventArgs.Empty);
-        
-        try
-        {
-            await _execute();
-        }
-        finally
-        {
-            _isExecuting = false;
-            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
-        }
-    }
-}
+                    <!-- Error message -->
+                    <Border IsVisible="{Binding HasRenameError}"
+                            Background="#B71C1C"
+                            CornerRadius="6"
+                            Padding="12,8">
+                        <TextBlock Text="{Binding RenameErrorMessage}"
+                                FontSize="12"
+                                Foreground="#FFCDD2"
+                                TextWrapping="Wrap"/>
+                    </Border>
 
-public class AsyncRelayCommand<T> : ICommand
-{
-    private readonly Func<T?, Task> _execute;
-    private bool _isExecuting;
+                </StackPanel>
+            </Border>
 
-    public event EventHandler? CanExecuteChanged;
+        </Grid>
+        <!-- END RENAME OVERLAY -->
 
-    public AsyncRelayCommand(Func<T?, Task> execute)
-    {
-        _execute = execute;
-    }
+        <!-- ════════════════════════════════════════════
+                FLOATING ERROR: Invalid folder
+            ════════════════════════════════════════════ -->
+            <Border IsVisible="{Binding ShowInvalidFolderError}"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Bottom"
+                    Margin="0,0,0,24"
+                    Padding="16,12"
+                    CornerRadius="10"
+                    Background="{DynamicResource SystemAccentColorDark1}"
+                    BorderBrush="{DynamicResource SystemAccentColorLight3}"
+                    BorderThickness="1"
+                    BoxShadow="0 4 24 0 #60000000"
+                    MaxWidth="480">
+                <Grid ColumnDefinitions="*,Auto">
 
-    public bool CanExecute(object? parameter) => !_isExecuting;
+                    <StackPanel Grid.Column="0" Spacing="4">
+                        <TextBlock Text="{Binding FloatingErrorMessage}"
+                                FontSize="13"
+                                FontWeight="SemiBold"
+                                Foreground="#EEEEEE"
+                                TextWrapping="Wrap"
+                                MinHeight="20"/>
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <TextBlock Text="If you think this is a mistake,"
+                                    FontSize="12"
+                                    Foreground="#CCCCCC"/>
+                            <Button Content="send us an Issue on GitHub"
+                                    Command="{Binding OpenGitHubIssuesCommand}"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Padding="0"
+                                    Foreground="{DynamicResource LinkColor}"
+                                    FontSize="12"
+                                    Cursor="Hand"/>
+                        </StackPanel>
+                    </StackPanel>
 
-    public async void Execute(object? parameter)
-    {
-        if (_isExecuting) return;
-        _isExecuting = true;
-        CanExecuteChanged?.Invoke(this, EventArgs.Empty);
-        try
-        {
-            await _execute(parameter is T t ? t : default);
-        }
-        finally
-        {
-            _isExecuting = false;
-            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
-        }
-    }
-}
+                    <Button Grid.Column="1"
+                            Content="✕"
+                            Command="{Binding DismissInvalidFolderErrorCommand}"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Foreground="#aaaaaa"
+                            FontSize="12"
+                            Padding="4,0,4,0"
+                            VerticalAlignment="Top"
+                            Cursor="Hand"/>
+                </Grid>
+            </Border>
+
+    </Grid>
+</Window>
