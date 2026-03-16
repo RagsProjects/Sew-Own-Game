@@ -181,7 +181,7 @@
                     <Border Grid.Row="1"
                             IsVisible="{Binding HasPermissionErrors}"
                             Background="#FFF3CD"
-                            CornerRadius="6"
+                            CornerRadius="8"
                             Padding="12"
                             Margin="0,0,0,12">
                         <StackPanel Spacing="4">
@@ -485,7 +485,7 @@
                     Background="{DynamicResource SystemAccentColorDark1}"
                     BorderBrush="{DynamicResource SystemAccentColorLight3}"
                     BorderThickness="1"
-                    CornerRadius="12"
+                    CornerRadius="16"
                     Padding="24"
                     BoxShadow="0 8 32 0 #80000000">
 
@@ -531,7 +531,7 @@
                     <!-- Error message -->
                     <Border IsVisible="{Binding HasRenameError}"
                             Background="#B71C1C"
-                            CornerRadius="6"
+                            CornerRadius="8"
                             Padding="12,8">
                         <TextBlock Text="{Binding RenameErrorMessage}"
                                 FontSize="12"
@@ -558,7 +558,7 @@
                     Background="{DynamicResource SystemAccentColorDark1}"
                     BorderBrush="{DynamicResource SystemAccentColorLight3}"
                     BorderThickness="1"
-                    CornerRadius="12"
+                    CornerRadius="16"
                     Padding="24"
                     BoxShadow="0 8 32 0 #80000000">
 
@@ -607,7 +607,7 @@
                     <!-- Error -->
                     <Border IsVisible="{Binding HasVersionError}"
                             Background="#B71C1C"
-                            CornerRadius="6"
+                            CornerRadius="8"
                             Padding="12,8">
                         <TextBlock Text="{Binding VersionErrorMessage}"
                                 FontSize="12"
