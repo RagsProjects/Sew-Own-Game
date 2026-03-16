@@ -16,20 +16,20 @@
                     <Color x:Key="SystemAccentColorLight1">#F07830</Color>
                     <Color x:Key="SystemAccentColorLight2">#F59050</Color>
                     <Color x:Key="SystemAccentColorLight3">#FAA870</Color>
+                    <Color x:Key="SystemAccentColorBackground">#FFCC80</Color>
 
                     <!-- Dynamic colors on light theme -->
                     <SolidColorBrush x:Key="LinkColor">#FFEE80</SolidColorBrush>
-                    <SolidColorBrush x:Key="SidebarActiveBg">#FF8032</SolidColorBrush>
-                    <SolidColorBrush x:Key="SidebarHoverBg">#F5E6DC</SolidColorBrush>
-                    <SolidColorBrush x:Key="SidebarPressedBg">#EBDDD3</SolidColorBrush>
+                    <SolidColorBrush x:Key="SidebarActiveBg">#FFDD80</SolidColorBrush>
+                    <SolidColorBrush x:Key="SidebarHoverBg">#323232</SolidColorBrush>
+                    <SolidColorBrush x:Key="SidebarPressedBg">#FFFFFF</SolidColorBrush>
                     <SolidColorBrush x:Key="SidebarActiveIcon">#E8650A</SolidColorBrush>
                     <SolidColorBrush x:Key="SidebarSettingsIcon">#A0806A</SolidColorBrush>
 
                     <!-- Uses white button "Close" in light theme -->
-                    <SolidColorBrush x:Key="CloseButtonBackground">#FFAA32</SolidColorBrush>
+                    <SolidColorBrush x:Key="CloseButtonBackground">#FFAA00</SolidColorBrush>
                     <SolidColorBrush x:Key="CloseButtonForeground">#FFFFFF</SolidColorBrush>
-                    <SolidColorBrush x:Key="CloseButtonBorder">#DDDDE8</SolidColorBrush>
-                    <SolidColorBrush x:Key="CloseButtonText">#2A2A3E</SolidColorBrush>
+                    <SolidColorBrush x:Key="CloseButtonBorder">#163264</SolidColorBrush>
                 </ResourceDictionary>
 
                 <ResourceDictionary x:Key="Dark">
@@ -41,20 +41,20 @@
                     <Color x:Key="SystemAccentColorLight1">#8880FF</Color>
                     <Color x:Key="SystemAccentColorLight2">#A49DFF</Color>
                     <Color x:Key="SystemAccentColorLight3">#C0BBFF</Color>
+                    <Color x:Key="SystemAccentColorBackground">#000000</Color>
 
                     <!-- Dynamic colors on dark theme -->
                     <SolidColorBrush x:Key="LinkColor">#20ee40</SolidColorBrush>
-                    <SolidColorBrush x:Key="SidebarActiveBg">#3B3B52</SolidColorBrush>
-                    <SolidColorBrush x:Key="SidebarHoverBg">#2A2A3E</SolidColorBrush>
-                    <SolidColorBrush x:Key="SidebarPressedBg">#33334A</SolidColorBrush>
-                    <SolidColorBrush x:Key="SidebarActiveIcon">#A49DFF</SolidColorBrush>
+                    <SolidColorBrush x:Key="SidebarActiveBg">#241264</SolidColorBrush>
+                    <SolidColorBrush x:Key="SidebarHoverBg">#FFFFFF</SolidColorBrush>
+                    <SolidColorBrush x:Key="SidebarPressedBg">#323232</SolidColorBrush>
+                    <SolidColorBrush x:Key="SidebarActiveIcon">#8040AA</SolidColorBrush>
                     <SolidColorBrush x:Key="SidebarSettingsIcon">#8888AA</SolidColorBrush>
 
                     <!-- Uses black button "Close" in dark theme -->
-                    <SolidColorBrush x:Key="CloseButtonBackground">#6432aa</SolidColorBrush>
-                    <SolidColorBrush x:Key="CloseButtonForeground">#FFFFFF</SolidColorBrush>
-                    <SolidColorBrush x:Key="CloseButtonBorder">#3A3A55</SolidColorBrush>
-                    <SolidColorBrush x:Key="CloseButtonText">#FFFFFF</SolidColorBrush>
+                    <SolidColorBrush x:Key="CloseButtonBackground">#321680</SolidColorBrush>
+                    <SolidColorBrush x:Key="CloseButtonForeground">#DDBBFF</SolidColorBrush>
+                    <SolidColorBrush x:Key="CloseButtonBorder">#FFFFFF</SolidColorBrush>
                 </ResourceDictionary>
 
             </ResourceDictionary.ThemeDictionaries>
@@ -64,73 +64,4 @@
     <Application.Styles>
         <FluentTheme />
     </Application.Styles>
-
-</Application>
-<Application xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="SewOwnGame.UI.App"
-             RequestedThemeVariant="Dark">
-
-    <Application.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.ThemeDictionaries>
-
-                <ResourceDictionary x:Key="Light">
-                    <!-- Uses orange colors on light theme -->
-                    <Color x:Key="SystemAccentColor">#E8650A</Color>
-                    <Color x:Key="SystemAccentColorDark1">#C9570A</Color>
-                    <Color x:Key="SystemAccentColorDark2">#A84808</Color>
-                    <Color x:Key="SystemAccentColorDark3">#8A3A06</Color>
-                    <Color x:Key="SystemAccentColorLight1">#F07830</Color>
-                    <Color x:Key="SystemAccentColorLight2">#F59050</Color>
-                    <Color x:Key="SystemAccentColorLight3">#FAA870</Color>
-
-                    <!-- Dynamic colors on light theme -->
-                    <SolidColorBrush x:Key="LinkColor">#ffee80</SolidColorBrush>
-                    <SolidColorBrush x:Key="SidebarActiveBg">#FF8032</SolidColorBrush>
-                    <SolidColorBrush x:Key="SidebarHoverBg">#F5E6DC</SolidColorBrush>
-                    <SolidColorBrush x:Key="SidebarPressedBg">#EBDDD3</SolidColorBrush>
-                    <SolidColorBrush x:Key="SidebarActiveIcon">#E8650A</SolidColorBrush>
-                    <SolidColorBrush x:Key="SidebarSettingsIcon">#A0806A</SolidColorBrush>
-
-                    <!-- Uses white button "Close" in light theme -->
-                    <SolidColorBrush x:Key="CloseButtonBackground">#FFFFFF</SolidColorBrush>
-                    <SolidColorBrush x:Key="CloseButtonForeground">#1A1A2E</SolidColorBrush>
-                    <SolidColorBrush x:Key="CloseButtonBorder">#DDDDE8</SolidColorBrush>
-                    <SolidColorBrush x:Key="CloseButtonText">#2A2A3E</SolidColorBrush>
-                </ResourceDictionary>
-
-                <ResourceDictionary x:Key="Dark">
-                    <!-- Uses purple colors in dark theme -->
-                    <Color x:Key="SystemAccentColor">#6C63FF</Color>
-                    <Color x:Key="SystemAccentColorDark1">#5A52E0</Color>
-                    <Color x:Key="SystemAccentColorDark2">#4840C0</Color>
-                    <Color x:Key="SystemAccentColorDark3">#3830A0</Color>
-                    <Color x:Key="SystemAccentColorLight1">#8880FF</Color>
-                    <Color x:Key="SystemAccentColorLight2">#A49DFF</Color>
-                    <Color x:Key="SystemAccentColorLight3">#C0BBFF</Color>
-
-                    <!-- Dynamic colors on dark theme -->
-                    <SolidColorBrush x:Key="LinkColor">#20ee40</SolidColorBrush>
-                    <SolidColorBrush x:Key="SidebarActiveBg">#3B3B52</SolidColorBrush>
-                    <SolidColorBrush x:Key="SidebarHoverBg">#2A2A3E</SolidColorBrush>
-                    <SolidColorBrush x:Key="SidebarPressedBg">#33334A</SolidColorBrush>
-                    <SolidColorBrush x:Key="SidebarActiveIcon">#A49DFF</SolidColorBrush>
-                    <SolidColorBrush x:Key="SidebarSettingsIcon">#8888AA</SolidColorBrush>
-
-                    <!-- Uses black button "Close" in dark theme -->
-                    <SolidColorBrush x:Key="CloseButtonBackground">#2A2A3E</SolidColorBrush>
-                    <SolidColorBrush x:Key="CloseButtonForeground">#C8C8E8</SolidColorBrush>
-                    <SolidColorBrush x:Key="CloseButtonBorder">#3A3A55</SolidColorBrush>
-                    <SolidColorBrush x:Key="CloseButtonText">#FFFFFF</SolidColorBrush>
-                </ResourceDictionary>
-
-            </ResourceDictionary.ThemeDictionaries>
-        </ResourceDictionary>
-    </Application.Resources>
-
-    <Application.Styles>
-        <FluentTheme />
-    </Application.Styles>
-
 </Application>

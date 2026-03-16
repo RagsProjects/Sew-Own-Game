@@ -62,7 +62,7 @@
         </Style>
 
         <Style Selector="Button.overlay-close">
-            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Background" Value="{DynamicResource CloseButtonBackground}"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="VerticalAlignment" Value="Stretch"/>
@@ -80,7 +80,11 @@
     </Window.Styles>
 
     <Grid>
-
+        <Image Source="avares://SewOwnGame.UI/Assets/UI/background.png"
+                Stretch="UniformToFill"
+                Opacity="0.4"/>
+        <Border Background="{DynamicResource SystemAccentColorBackground}"
+                Opacity="0.8"/>
         <!-- ════════════════════════════════════════════
              MAIN LAYOUT: Sidebar + Content
              ════════════════════════════════════════════ -->
@@ -152,7 +156,7 @@
                         <TextBlock Text="Projects"
                                    FontSize="22"
                                    FontWeight="SemiBold"
-                                   Foreground="#ffdd00"/>
+                                   Foreground="{DynamicResource CloseButtonForeground}"/>
                         <TextBlock Text="All game projects detected on system"
                                    FontSize="13"
                                    Foreground="Gray"/>
@@ -193,7 +197,7 @@
 
                     <!-- Projects List -->
                     <Border Grid.Row="2"
-                            BorderBrush="LightGray"
+                            BorderBrush="{DynamicResource SidebarHoverBg}"
                             BorderThickness="1"
                             CornerRadius="8"
                             Padding="12">
@@ -367,7 +371,7 @@
                         <TextBlock Text="Settings"
                                    FontSize="17"
                                    FontWeight="SemiBold"
-                                   Foreground="#ffdd00"/>
+                                   Foreground="{DynamicResource CloseButtonForeground}"/>
                         <Border Height="1"
                                 Background="#aaaaaa"
                                 Margin="0,10,0,0"/>
@@ -395,7 +399,7 @@
                                                    Text="Light Theme"
                                                    FontSize="13"
                                                    FontWeight="Medium"
-                                                   Foreground="{DynamicResource CloseButtonText}"/>
+                                                   Foreground="{DynamicResource CloseButtonForeground}"/>
                                         <TextBlock Name="ThemeSubLabel"
                                                    Text="Click me for Light Theme!"
                                                    FontSize="10"
@@ -420,12 +424,16 @@
                                 <TextBox Grid.Column="0"
                                         Text="{Binding UnityEditorPath}"
                                         FontSize="12"
-                                        VerticalContentAlignment="Center"/>
+                                        VerticalContentAlignment="Center"
+                                        Foreground="{DynamicResource CloseButtonForeground}"
+                                        Background="{DynamicResource CloseButtonBackground}"/>
                                 <Button Grid.Column="1"
                                         Content="Browse"
                                         Command="{Binding BrowseUnityEditorPathCommand}"
                                         Padding="12,8"
                                         CornerRadius="8"
+                                        Foreground="{DynamicResource CloseButtonForeground}"
+                                        Background="{DynamicResource CloseButtonBackground}"
                                         Cursor="Hand"/>
                             </Grid>
                         </StackPanel>
@@ -438,6 +446,8 @@
                             HorizontalAlignment="Right"
                             Padding="16,8"
                             CornerRadius="8"
+                            Foreground="{DynamicResource CloseButtonForeground}"
+                            Background="{DynamicResource CloseButtonBackground}"
                             Click="OnSettingsClick"/>
 
                 </Grid>
