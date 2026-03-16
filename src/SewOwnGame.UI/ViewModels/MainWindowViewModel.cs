@@ -25,13 +25,17 @@ public class MainWindowViewModel : ViewModelBase
     private bool _hasPermissionErrors;
     private bool _showInvalidFolderError;
     private bool _showRenameOverlay;
+    private bool _showVersionOverlay;
     private readonly AudioService _audioService = new();
     private string _renameInputText = string.Empty;
     private string _renameErrorMessage = string.Empty;
     private string _permissionWarningMessage = string.Empty;
     private string _floatingErrorMessage = string.Empty;
+    private string _versionInputText = string.Empty;
+    private string _versionErrorMessage = string.Empty;
     private AppSettings _appSettings;
     private GameProject? _projectBeingRenamed;
+    private GameProject? _projectBeingVersioned;
 
     //      Game Engines Paths      \\
     private string _unityEditorPath = string.Empty;
@@ -56,115 +60,9 @@ public class MainWindowViewModel : ViewModelBase
     public ICommand DeleteProjectCommand { get; }
     public ICommand ConfirmRenameCommand { get; }
     public ICommand CancelRenameCommand { get; }
-    
-    public bool IsLoading
-    {
-        get => _isLoading;
-        set
-        {
-            if (_isLoading != value)
-            {
-                _isLoading = value;
-                OnPropertyChanged(nameof(IsLoading));
-                OnPropertyChanged(nameof(IsEmpty));
-                OnPropertyChanged(nameof(HasProjects));
-            }
-        }
-    }
-
-    public bool HasPermissionErrors
-    {
-        get => _hasPermissionErrors;
-        set
-        {
-            if (_hasPermissionErrors != value)
-            {
-                _hasPermissionErrors = value;
-                OnPropertyChanged(nameof(HasPermissionErrors));
-                if (value) _ = _audioService.PlayPopupAsync();
-            }
-        }
-    }
-
-    public string PermissionWarningMessage
-    {
-        get => _permissionWarningMessage;
-        set
-        {
-            if (_permissionWarningMessage != value)
-            {
-                _permissionWarningMessage = value;
-                OnPropertyChanged(nameof(PermissionWarningMessage));
-            }
-        }
-    }
-
-    public string FloatingErrorMessage
-    {
-        get => _floatingErrorMessage;
-        set
-        {
-            _floatingErrorMessage = value;
-            OnPropertyChanged(nameof(FloatingErrorMessage));
-        }
-    }
-
-    public bool ShowInvalidFolderError
-    {
-        get => _showInvalidFolderError;
-        set
-        {
-            if (_showInvalidFolderError != value)
-            {
-                _showInvalidFolderError = value;
-                OnPropertyChanged(nameof(ShowInvalidFolderError));
-            }
-        }
-    }
-
-    public bool ShowRenameOverlay
-    {
-        get => _showRenameOverlay;
-        set
-        {
-            if (_showRenameOverlay != value)
-            {
-                _showRenameOverlay = value;
-                OnPropertyChanged(nameof(ShowRenameOverlay));
-                if (value) _ = _audioService.PlayPopupAsync();
-            }
-        }
-    }
-
-    public string RenameInputText
-    {
-        get => _renameInputText;
-        set
-        {
-            if (_renameInputText != value)
-            {
-                _renameInputText = value;
-                OnPropertyChanged(nameof(RenameInputText));
-                RenameErrorMessage = string.Empty;
-            }
-        }
-    }
-
-    public string RenameErrorMessage
-    {
-        get => _renameErrorMessage;
-        set
-        {
-            if(_renameErrorMessage != value)
-            {
-                _renameErrorMessage = value;
-                OnPropertyChanged(nameof(RenameErrorMessage));
-                OnPropertyChanged(nameof(HasRenameError));
-            }
-        }
-    }
-
-    public bool HasRenameError => !string.IsNullOrEmpty(_renameErrorMessage);
+    public ICommand SetVersionCommand { get; }
+    public ICommand ConfirmVersionCommand { get; }
+    public ICommand CancelVersionCommand { get; }
 
     private Task OpenGitHubIssuesAsync()
     {
@@ -384,57 +282,6 @@ public class MainWindowViewModel : ViewModelBase
         Projects.Remove(project);
         return Task.CompletedTask;
     }
-    
-    public MainWindowViewModel()
-    {
-        _settingsService = new SettingsService();
-        _appSettings = _settingsService.Load();
-        _unityEditorPath = _appSettings.UnityEditorPath;
-        _projectDetectionService = new UniversalProjectDetectionService();
-
-        OpenProjectCommand = new AsyncRelayCommand<GameProject>(OpenProjectAsync);
-        OpenInExplorerCommand   = new AsyncRelayCommand<GameProject>(OpenInExplorerAsync);
-        RenameProjectCommand    = new AsyncRelayCommand<GameProject>(RenameProjectAsync);
-        ConfirmRenameCommand = new AsyncCommand(ConfirmRenameAsync);
-        CancelRenameCommand = new AsyncCommand(CancelRenameAsync);
-        DeleteProjectCommand    = new AsyncRelayCommand<GameProject>(DeleteProjectAsync);
-        BrowseUnityEditorPathCommand = new AsyncCommand(BrowseUnityEditorPathAsync);
-        Projects = new ObservableCollection<GameProject>();
-
-        Projects.CollectionChanged += (_, _) =>
-        {
-            OnPropertyChanged(nameof(IsEmpty));
-            OnPropertyChanged(nameof(HasProjects));
-        };
-        
-        ScanProjectsCommand = new AsyncCommand(ScanProjectsAsync);
-        ImportProjectCommand = new AsyncCommand(ImportProjectAsync);
-        OpenGitHubIssuesCommand = new AsyncCommand(OpenGitHubIssuesAsync);
-        
-        DismissInvalidFolderErrorCommand = new AsyncCommand(() => 
-        {
-            ShowInvalidFolderError = false;
-            return Task.CompletedTask;
-        });
-    }
-
-    // Game Engines Proprieties
-    public string UnityEditorPath
-    {
-        get => _unityEditorPath;
-        set
-        {
-            if (_unityEditorPath != value)
-            {
-                _unityEditorPath = value;
-                OnPropertyChanged(nameof(UnityEditorPath));
-                _appSettings.UnityEditorPath = value;
-                _settingsService.Save(_appSettings);
-            }
-        }
-    }
-
-    public ICommand BrowseUnityEditorPathCommand { get; }
 
     private async Task ImportProjectAsync()
     {
@@ -482,6 +329,270 @@ public class MainWindowViewModel : ViewModelBase
             }
         }
     }
+    
+    private Task SetVersionAsync(GameProject? project)
+    {
+        if (project == null) return Task.CompletedTask;
+
+        _projectBeingVersioned = project;
+        VersionInputText = string.Empty;
+        VersionErrorMessage = string.Empty;
+        ShowVersionOverlay = true;
+
+        return Task.CompletedTask;
+    }
+
+    private Task ConfirmVersionAsync()
+    {
+        if (_projectBeingVersioned == null) return Task.CompletedTask;
+
+        if (string.IsNullOrWhiteSpace(VersionInputText))
+        {
+            VersionErrorMessage = "Input cannot be blank.";
+            return Task.CompletedTask;
+        }
+
+        var valid = System.Text.RegularExpressions.Regex.IsMatch(
+            VersionInputText,
+            @"^\d{4}\.\d+\.\d+[a-z]\d+$");
+
+        if (!valid)
+        {
+            VersionErrorMessage = "Invalid format. Expected format: 2023.3.10f1";
+            return Task.CompletedTask;
+        }
+
+        _projectBeingVersioned.EngineVersion = VersionInputText;
+
+        var index = Projects.IndexOf(_projectBeingVersioned);
+        if (index >= 0)
+        {
+            Projects.RemoveAt(index);
+            Projects.Insert(index, _projectBeingVersioned);
+        }
+
+        ShowVersionOverlay = false;
+        return Task.CompletedTask;
+    }
+
+    private Task CancelVersionAsync()
+    {
+        ShowVersionOverlay = false;
+        VersionInputText = string.Empty;
+        VersionErrorMessage = string.Empty;
+        _projectBeingVersioned = null;
+        return Task.CompletedTask;
+    }
+    
+    public MainWindowViewModel()
+    {
+        _settingsService = new SettingsService();
+        _appSettings = _settingsService.Load();
+        _unityEditorPath = _appSettings.UnityEditorPath;
+        _projectDetectionService = new UniversalProjectDetectionService();
+
+        OpenProjectCommand = new AsyncRelayCommand<GameProject>(OpenProjectAsync);
+        OpenInExplorerCommand = new AsyncRelayCommand<GameProject>(OpenInExplorerAsync);
+        RenameProjectCommand = new AsyncRelayCommand<GameProject>(RenameProjectAsync);
+        ConfirmRenameCommand = new AsyncCommand(ConfirmRenameAsync);
+        CancelRenameCommand = new AsyncCommand(CancelRenameAsync);
+        DeleteProjectCommand = new AsyncRelayCommand<GameProject>(DeleteProjectAsync);
+
+        SetVersionCommand = new AsyncRelayCommand<GameProject>(SetVersionAsync);
+        ConfirmVersionCommand = new AsyncCommand(ConfirmVersionAsync);
+        CancelVersionCommand = new AsyncCommand(CancelVersionAsync);
+
+        BrowseUnityEditorPathCommand = new AsyncCommand(BrowseUnityEditorPathAsync);
+        Projects = new ObservableCollection<GameProject>();
+
+        Projects.CollectionChanged += (_, _) =>
+        {
+            OnPropertyChanged(nameof(IsEmpty));
+            OnPropertyChanged(nameof(HasProjects));
+        };
+        
+        ScanProjectsCommand = new AsyncCommand(ScanProjectsAsync);
+        ImportProjectCommand = new AsyncCommand(ImportProjectAsync);
+        OpenGitHubIssuesCommand = new AsyncCommand(OpenGitHubIssuesAsync);
+        
+        DismissInvalidFolderErrorCommand = new AsyncCommand(() => 
+        {
+            ShowInvalidFolderError = false;
+            return Task.CompletedTask;
+        });
+    }
+
+    public bool IsLoading
+    {
+        get => _isLoading;
+        set
+        {
+            if (_isLoading != value)
+            {
+                _isLoading = value;
+                OnPropertyChanged(nameof(IsLoading));
+                OnPropertyChanged(nameof(IsEmpty));
+                OnPropertyChanged(nameof(HasProjects));
+            }
+        }
+    }
+
+    public bool HasPermissionErrors
+    {
+        get => _hasPermissionErrors;
+        set
+        {
+            if (_hasPermissionErrors != value)
+            {
+                _hasPermissionErrors = value;
+                OnPropertyChanged(nameof(HasPermissionErrors));
+                if (value) _ = _audioService.PlayPopupAsync();
+            }
+        }
+    }
+
+    public string PermissionWarningMessage
+    {
+        get => _permissionWarningMessage;
+        set
+        {
+            if (_permissionWarningMessage != value)
+            {
+                _permissionWarningMessage = value;
+                OnPropertyChanged(nameof(PermissionWarningMessage));
+            }
+        }
+    }
+
+    public string FloatingErrorMessage
+    {
+        get => _floatingErrorMessage;
+        set
+        {
+            _floatingErrorMessage = value;
+            OnPropertyChanged(nameof(FloatingErrorMessage));
+        }
+    }
+
+    public bool ShowInvalidFolderError
+    {
+        get => _showInvalidFolderError;
+        set
+        {
+            if (_showInvalidFolderError != value)
+            {
+                _showInvalidFolderError = value;
+                OnPropertyChanged(nameof(ShowInvalidFolderError));
+            }
+        }
+    }
+
+    public bool ShowRenameOverlay
+    {
+        get => _showRenameOverlay;
+        set
+        {
+            if (_showRenameOverlay != value)
+            {
+                _showRenameOverlay = value;
+                OnPropertyChanged(nameof(ShowRenameOverlay));
+                if (value) _ = _audioService.PlayPopupAsync();
+            }
+        }
+    }
+
+    public string RenameInputText
+    {
+        get => _renameInputText;
+        set
+        {
+            if (_renameInputText != value)
+            {
+                _renameInputText = value;
+                OnPropertyChanged(nameof(RenameInputText));
+                RenameErrorMessage = string.Empty;
+            }
+        }
+    }
+
+    public string RenameErrorMessage
+    {
+        get => _renameErrorMessage;
+        set
+        {
+            if(_renameErrorMessage != value)
+            {
+                _renameErrorMessage = value;
+                OnPropertyChanged(nameof(RenameErrorMessage));
+                OnPropertyChanged(nameof(HasRenameError));
+            }
+        }
+    }
+
+    public bool HasRenameError => !string.IsNullOrEmpty(_renameErrorMessage);
+
+    public bool ShowVersionOverlay
+    {
+        get => _showVersionOverlay;
+        set
+        {
+            if (_showVersionOverlay != value)
+            {
+                _showVersionOverlay = value;
+                OnPropertyChanged(nameof(ShowVersionOverlay));
+                if (value) _ = _audioService.PlayPopupAsync();
+            }
+        }
+    }
+
+    public string VersionInputText
+    {
+        get => _versionInputText;
+        set
+        {
+            if(_versionInputText != value)
+            {
+                _versionInputText = value;
+                OnPropertyChanged(nameof(VersionInputText));
+                VersionErrorMessage = string.Empty;
+            }
+        }
+    }
+
+    public string VersionErrorMessage
+    {
+        get => _versionErrorMessage;
+        set
+        {
+            if(_versionErrorMessage != value)
+            {
+                _versionErrorMessage = value;
+                OnPropertyChanged(nameof(VersionErrorMessage));
+                OnPropertyChanged(nameof(HasVersionError));
+            }
+        }
+    }
+
+    public bool HasVersionError => !string.IsNullOrEmpty(_versionErrorMessage);
+
+    // Game Engines Proprieties
+    public string UnityEditorPath
+    {
+        get => _unityEditorPath;
+        set
+        {
+            if (_unityEditorPath != value)
+            {
+                _unityEditorPath = value;
+                OnPropertyChanged(nameof(UnityEditorPath));
+                _appSettings.UnityEditorPath = value;
+                _settingsService.Save(_appSettings);
+            }
+        }
+    }
+
+    public ICommand BrowseUnityEditorPathCommand { get; }
+
 }
 
 public class AsyncCommand : ICommand
