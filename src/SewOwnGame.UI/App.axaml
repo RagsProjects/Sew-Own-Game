@@ -27,9 +27,15 @@
                     <SolidColorBrush x:Key="SidebarSettingsIcon">#A0806A</SolidColorBrush>
 
                     <!-- Uses white button "Close" in light theme -->
-                    <SolidColorBrush x:Key="CloseButtonBackground">#FFAA00</SolidColorBrush>
-                    <SolidColorBrush x:Key="CloseButtonForeground">#FFFFFF</SolidColorBrush>
+                    <SolidColorBrush x:Key="CloseButtonBackground">#FFAA64</SolidColorBrush>
+                    <SolidColorBrush x:Key="CloseButtonForeground">#323232</SolidColorBrush>
                     <SolidColorBrush x:Key="CloseButtonBorder">#163264</SolidColorBrush>
+
+                    <!-- Error/Warning Panel's colors -->
+                    <SolidColorBrush x:Key="DangerColor">#CC1616</SolidColorBrush>
+                    <SolidColorBrush x:Key="WarnColor">#FFAA00</SolidColorBrush>
+                    <SolidColorBrush x:Key="SuccessColor">#64DD64</SolidColorBrush>
+                    <SolidColorBrush x:Key="CancelColor">#990000</SolidColorBrush>
                 </ResourceDictionary>
 
                 <ResourceDictionary x:Key="Dark">
@@ -52,9 +58,15 @@
                     <SolidColorBrush x:Key="SidebarSettingsIcon">#8888AA</SolidColorBrush>
 
                     <!-- Uses black button "Close" in dark theme -->
-                    <SolidColorBrush x:Key="CloseButtonBackground">#321680</SolidColorBrush>
-                    <SolidColorBrush x:Key="CloseButtonForeground">#DDBBFF</SolidColorBrush>
+                    <SolidColorBrush x:Key="CloseButtonBackground">#AA64CC</SolidColorBrush>
+                    <SolidColorBrush x:Key="CloseButtonForeground">#FFFFFF</SolidColorBrush>
                     <SolidColorBrush x:Key="CloseButtonBorder">#FFFFFF</SolidColorBrush>
+
+                    <!-- Error/Warning Panel's colors -->
+                    <SolidColorBrush x:Key="DangerColor">#FF3232</SolidColorBrush>
+                    <SolidColorBrush x:Key="WarnColor">#FF8000</SolidColorBrush>
+                    <SolidColorBrush x:Key="SuccessColor">#328032</SolidColorBrush>
+                    <SolidColorBrush x:Key="CancelColor">#AA1616</SolidColorBrush>
                 </ResourceDictionary>
 
             </ResourceDictionary.ThemeDictionaries>

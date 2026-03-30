@@ -21,7 +21,10 @@ public class SettingsService
                 return JsonSerializer.Deserialize<AppSettings>(json) ?? CreateDefault();
             }
         }
-        catch { }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[WARNING] Failed to load settings: {ex.Message}");
+        }
 
         return CreateDefault();
     }
@@ -33,7 +36,10 @@ public class SettingsService
             Directory.CreateDirectory(Path.GetDirectoryName(SettingsPath)!);
             File.WriteAllText(SettingsPath, JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true }));
         }
-        catch { }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[WARNING] Failed to save settings: {ex.Message}");
+        }
     }
 
     private static AppSettings CreateDefault()

@@ -12,6 +12,7 @@ using Avalonia.Threading;
 using SewOwnGame.Core.Interfaces;
 using SewOwnGame.Core.Models;
 using SewOwnGame.Core.Services;
+using SewOwnGame.UI.Commands;
 using SewOwnGame.UI.Services;
 
 namespace SewOwnGame.UI.ViewModels;
@@ -593,68 +594,4 @@ public class MainWindowViewModel : ViewModelBase
 
     public ICommand BrowseUnityEditorPathCommand { get; }
 
-}
-
-public class AsyncCommand : ICommand
-{
-    private readonly Func<Task> _execute;
-    private bool _isExecuting;
-    
-    public event EventHandler? CanExecuteChanged;
-    
-    public AsyncCommand(Func<Task> execute)
-    {
-        _execute = execute;
-    }
-    
-    public bool CanExecute(object? parameter) => !_isExecuting;
-    
-    public async void Execute(object? parameter)
-    {
-        if (_isExecuting) return;
-        
-        _isExecuting = true;
-        CanExecuteChanged?.Invoke(this, EventArgs.Empty);
-        
-        try
-        {
-            await _execute();
-        }
-        finally
-        {
-            _isExecuting = false;
-            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
-        }
-    }
-}
-
-public class AsyncRelayCommand<T> : ICommand
-{
-    private readonly Func<T?, Task> _execute;
-    private bool _isExecuting;
-
-    public event EventHandler? CanExecuteChanged;
-
-    public AsyncRelayCommand(Func<T?, Task> execute)
-    {
-        _execute = execute;
-    }
-
-    public bool CanExecute(object? parameter) => !_isExecuting;
-
-    public async void Execute(object? parameter)
-    {
-        if (_isExecuting) return;
-        _isExecuting = true;
-        CanExecuteChanged?.Invoke(this, EventArgs.Empty);
-        try
-        {
-            await _execute(parameter is T t ? t : default);
-        }
-        finally
-        {
-            _isExecuting = false;
-            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
-        }
-    }
 }

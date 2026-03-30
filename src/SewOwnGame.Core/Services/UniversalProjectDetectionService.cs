@@ -7,7 +7,7 @@ public class UniversalProjectDetectionService : IProjectDetectionService
 {
     private readonly EngineManager _engineManager;
 
-    public bool HasPermissionErrors { get; private set; }
+    public bool HasPermissionErrors {get; private set; }
     public string PermissionWarningMessage { get; private set; } = string.Empty;
 
     public UniversalProjectDetectionService()
@@ -46,10 +46,10 @@ public class UniversalProjectDetectionService : IProjectDetectionService
                 }
             }
 
-            if (engine is UnityEngineSupport unityEngine && unityEngine.HasPermissionErrors)
+            if (engine.HasPermissionErrors)
             {
                 HasPermissionErrors = true;
-                PermissionWarningMessage =$"Make sure your {engine.EngineName} project folders have the correct permissions.";
+                PermissionWarningMessage = engine.PermissionWarningMessage;
             }
         }
 
