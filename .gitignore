@@ -15,7 +15,7 @@ bld/
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
-[Pp]ublish
+[Pp]ublish/
 
 ## Visual Studio cache/options
 .vs/
@@ -291,6 +291,3 @@ mono_crash.*
 [Dd]ebugPublic/
 [Rr]elease/
 [Rr]eleases/
-
-# Others
-*.txt
