@@ -180,7 +180,7 @@
                     <!-- Permission warning -->
                     <Border Grid.Row="1"
                             IsVisible="{Binding HasPermissionErrors}"
-                            Background="#FFF3CD"
+                            Background="#FFFFFF"
                             CornerRadius="8"
                             Padding="12"
                             Margin="0,0,0,12">
@@ -188,10 +188,10 @@
                             <TextBlock Text="⚠️ Permission Warning"
                                        FontSize="13"
                                        FontWeight="SemiBold"
-                                       Foreground="#856404"/>
+                                       Foreground="{DynamicResource WarnColor}"/>
                             <TextBlock Text="{Binding PermissionWarningMessage}"
                                        FontSize="12"
-                                       Foreground="#856404"
+                                       Foreground="{DynamicResource WarnColor}"
                                        TextWrapping="Wrap"/>
                         </StackPanel>
                     </Border>
@@ -269,7 +269,7 @@
                                                                         FontSize="10"
                                                                         Padding="4"
                                                                         CornerRadius="8"
-                                                                        Background="#DD3232"
+                                                                        Background="{DynamicResource DangerColor}"
                                                                         Foreground="White"
                                                                         BorderThickness="0"
                                                                         Cursor="Hand"
@@ -332,8 +332,8 @@
                                                                             Padding="12,8"
                                                                             Cursor="Hand">
                                                                         <StackPanel Orientation="Horizontal" Spacing="10">
-                                                                            <TextBlock Text="🗑️" FontSize="14" Foreground="#E53935"/>
-                                                                            <TextBlock Text="Delete" FontSize="13" Foreground="#E53935"/>
+                                                                            <TextBlock Text="🗑️" FontSize="14" Foreground="{DynamicResource DangerColor}"/>
+                                                                            <TextBlock Text="Delete" FontSize="13" Foreground="{DynamicResource DangerColor}"/>
                                                                         </StackPanel>
                                                                     </Button>
                                                                 </StackPanel>
@@ -374,7 +374,7 @@
                     HorizontalAlignment="Left"
                     VerticalAlignment="Stretch"
                     Margin="64,0,0,0"
-                    Background="{DynamicResource SystemAccentColorDark1}"
+                    Background="{DynamicResource SystemAccentColorDark3}"
                     BorderBrush="{DynamicResource SystemAccentColorLight3}"
                     BorderThickness="0,0,1,0"
                     BoxShadow="4 0 24 0 #40000000">
@@ -387,7 +387,7 @@
                                    FontWeight="SemiBold"
                                    Foreground="{DynamicResource CloseButtonForeground}"/>
                         <Border Height="1"
-                                Background="#aaaaaa"
+                                Background="#AAAAAA"
                                 Margin="0,10,0,0"/>
                     </StackPanel>
 
@@ -397,7 +397,7 @@
                             <TextBlock Text="Interface Theme"
                                        FontSize="12"
                                        FontWeight="SemiBold"
-                                       Foreground="#ffffff"
+                                       Foreground="#FFFFFF"
                                        LetterSpacing="1"/>
 
                             <Button Name="ThemeToggleButton"
@@ -506,7 +506,7 @@
                                 Padding="16,8"
                                 CornerRadius="8"
                                 Cursor="Hand"
-                                Background="#C62828"
+                                Background="{DynamicResource CancelColor}"
                                 Foreground="White"
                                 BorderThickness="0"/>
 
@@ -516,7 +516,7 @@
                                 Padding="16,8"
                                 CornerRadius="8"
                                 Cursor="Hand"
-                                Background="#2E7D32"
+                                Background="{DynamicResource SuccessColor}"
                                 Foreground="White"
                                 BorderThickness="0"/>
                     </Grid>
@@ -530,12 +530,12 @@
 
                     <!-- Error message -->
                     <Border IsVisible="{Binding HasRenameError}"
-                            Background="#B71C1C"
+                            Background="{DynamicResource DangerColor}"
                             CornerRadius="8"
                             Padding="12,8">
                         <TextBlock Text="{Binding RenameErrorMessage}"
                                 FontSize="12"
-                                Foreground="#FFCDD2"
+                                Foreground="#FFFFFF"
                                 TextWrapping="Wrap"/>
                     </Border>
 
@@ -582,7 +582,7 @@
                                 Padding="16,8"
                                 CornerRadius="8"
                                 Cursor="Hand"
-                                Background="#C62828"
+                                Background="{DynamicResource CancelColor}"
                                 Foreground="White"
                                 BorderThickness="0"/>
 
@@ -592,7 +592,7 @@
                                 Padding="16,8"
                                 CornerRadius="8"
                                 Cursor="Hand"
-                                Background="#2E7D32"
+                                Background="{DynamicResource SuccessColor}"
                                 Foreground="White"
                                 BorderThickness="0"/>
                     </Grid>
@@ -606,12 +606,12 @@
 
                     <!-- Error -->
                     <Border IsVisible="{Binding HasVersionError}"
-                            Background="#B71C1C"
+                            Background="{DynamicResource DangerColor}"
                             CornerRadius="8"
                             Padding="12,8">
                         <TextBlock Text="{Binding VersionErrorMessage}"
                                 FontSize="12"
-                                Foreground="#FFCDD2"
+                                Foreground="#FFFFFF"
                                 TextWrapping="Wrap"/>
                     </Border>
 

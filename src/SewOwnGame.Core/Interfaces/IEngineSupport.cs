@@ -34,4 +34,14 @@ public interface IEngineSupport
     /// Detects game engine version
     /// </summary>
     string DetectEngineVersion(string projectPath);
+
+    /// <summary>
+    /// If there's any error set true for UI error message logic
+    /// </summary>
+    bool HasPermissionErrors { get; }
+
+    /// <summary>
+    /// Detects if project path require admin privilages to be acessed
+    /// </summary>
+    string PermissionWarningMessage { get; }
 }
