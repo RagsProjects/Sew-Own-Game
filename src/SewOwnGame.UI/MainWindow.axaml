@@ -3,81 +3,674 @@
         xmlns:vm="using:SewOwnGame.UI.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="600"
+        Name="RootWindow"
         x:Class="SewOwnGame.UI.MainWindow"
         x:DataType="vm:MainWindowViewModel"
+        x:CompileBindings="True"
         Title="Sew Own Game"
-        Width="900" Height="600">
+        Width="1000" Height="600"
+        MinWidth="600" MinHeight="400">
 
-    <Design.DataContext>
-        <vm:MainWindowViewModel/>
-    </Design.DataContext>
+    <Window.Styles>
 
-    <Grid RowDefinitions="Auto,*" Margin="20">
-        
-        <!-- Header -->
-        <StackPanel Grid.Row="0" Spacing="10" Margin="0,0,0,20">
-            <TextBlock Text="Sew Own Game" 
-                       FontSize="24" 
-                       FontWeight="Bold"/>
-            <TextBlock Text="Game Development Productivity Tools" 
-                       FontSize="14" 
-                       Foreground="Gray"/>
-            
-            <Button Content="Scan for Projects" 
-                    Command="{Binding ScanProjectsCommand}"
-                    IsEnabled="{Binding !IsLoading}"
-                    HorizontalAlignment="Left"
-                    Padding="15,8"/>
-        </StackPanel>
-        
-        <!-- Projects List -->
-        <Border Grid.Row="1" 
-                BorderBrush="LightGray" 
-                BorderThickness="1" 
-                CornerRadius="5"
-                Padding="10">
-            
-            <Grid>
-                <!-- Loading Indicator -->
-                <TextBlock Text="Loading projects..." 
-                           IsVisible="{Binding IsLoading}"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"
-                           FontSize="16"
-                           Foreground="Gray"/>
-                
-                <!-- Projects List -->
-                <ScrollViewer IsVisible="{Binding !IsLoading}">
-                    <ItemsControl ItemsSource="{Binding Projects}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Border BorderBrush="LightGray" 
-                                        BorderThickness="0,0,0,1" 
-                                        Padding="10"
-                                        Margin="0,0,0,5">
-                                    <StackPanel Spacing="5">
-                                        <TextBlock Text="{Binding Name}" 
-                                                   FontSize="16" 
-                                                   FontWeight="SemiBold"/>
-                                        <TextBlock Text="{Binding Path}" 
-                                                   FontSize="12" 
-                                                   Foreground="Gray"/>
-                                        <StackPanel Orientation="Horizontal" Spacing="15">
-                                            <TextBlock Text="{Binding EngineType, StringFormat='Engine: {0}'}" 
-                                                       FontSize="12"/>
-                                            <TextBlock Text="{Binding EngineVersion, StringFormat='Version: {0}'}" 
-                                                       FontSize="12"/>
-                                            <TextBlock Text="{Binding DisplaySize}" 
-                                                       FontSize="12"/>
-                                        </StackPanel>
-                                    </StackPanel>
-                                </Border>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
+        <Style Selector="Button.sidebar-btn">
+            <Setter Property="Width" Value="32"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <Style Selector="Button.sidebar-btn:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SidebarHoverBg}"/>
+        </Style>
+        <Style Selector="Button.sidebar-btn:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SidebarHoverBg}"/>
+        </Style>
+
+        <Style Selector="Button.sidebar-btn.active /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SidebarHoverBg}"/>
+        </Style>
+
+        <Style Selector="Button.settings-action-btn">
+            <Setter Property="Padding" Value="12"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        </Style>
+
+        <Style Selector="Button.theme-toggle-btn">
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Padding" Value="12,0"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource CloseButtonBorder}"/>
+            <Setter Property="Background" Value="{DynamicResource CloseButtonBackground}"/>
+            <Setter Property="Foreground" Value="{DynamicResource CloseButtonForeground}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        </Style>
+        <Style Selector="Button.theme-toggle-btn:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SystemAccentColorDark3}"/>
+        </Style>
+
+        <Style Selector="Button.overlay-close">
+            <Setter Property="Background" Value="{DynamicResource CloseButtonBackground}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+        </Style>
+        <Style Selector="Button.overlay-close /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+        <Style Selector="Button.overlay-close:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+        <Style Selector="Button.overlay-close:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+
+    </Window.Styles>
+
+    <Grid>
+        <Image Source="avares://SewOwnGame.UI/Assets/UI/background.png"
+                Stretch="UniformToFill"
+                Opacity="0.4"/>
+        <Border Background="{DynamicResource SystemAccentColorBackground}"
+                Opacity="0.8"/>
+        <!-- ════════════════════════════════════════════
+             MAIN LAYOUT: Sidebar + Content
+             ════════════════════════════════════════════ -->
+        <Grid ColumnDefinitions="48,*">
+
+            <!-- ─── SIDEBAR ─── -->
+            <Border Grid.Column="0"
+                    Background="{DynamicResource SidebarActiveBg}"
+                    BorderBrush="{DynamicResource SystemAccentColorDark3}"
+                    BorderThickness="0,0,1,0">
+
+                <DockPanel LastChildFill="False">
+
+                    <StackPanel DockPanel.Dock="Top"
+                                HorizontalAlignment="Center"
+                                Margin="0,14,0,18">
+                        <Border Width="40" Height="40"
+                                CornerRadius="8"
+                                ToolTip.Tip="Sew Own Game">
+                            <Image Source="avares://SewOwnGame.UI/Assets/UI/sogIcon.png"
+                                Width="40"
+                                Height="40"
+                                Stretch="Uniform"/>
+                        </Border>
+                    </StackPanel>
+
+                    <Border DockPanel.Dock="Top"
+                            Height="1"
+                            Background="{DynamicResource SidebarActiveBg}"
+                            Margin="8,0"/>
+
+                    <StackPanel DockPanel.Dock="Top"
+                                Margin="8,8,8,0"
+                                Spacing="4">
+                        <Button Classes="sidebar-btn active"
+                                ToolTip.Tip="Projects">
+                            <TextBlock Text="📁"
+                                       FontSize="16"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+                        </Button>
+                    </StackPanel>
+
+                    <StackPanel DockPanel.Dock="Bottom"
+                                Margin="8,8,8,8"
+                                Spacing="4">
+                        <Button Classes="sidebar-btn"
+                                Name="SettingsButton"
+                                ToolTip.Tip="Settings"
+                                Click="OnSettingsClick">
+                            <TextBlock Name="SettingsIcon"
+                                       Text="⚙"
+                                       FontSize="16"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       Foreground="{DynamicResource SidebarSettingsIcon}"/>
+                        </Button>
+                    </StackPanel>
+
+                </DockPanel>
+            </Border>
+
+            <!-- ─── MAIN CONTENT ─── -->
+            <Grid Grid.Column="1" Margin="24,24,24,24">
+                <Grid RowDefinitions="Auto,Auto,*">
+
+                    <!-- Header -->
+                    <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,16">
+                        <TextBlock Text="Projects"
+                                   FontSize="22"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource CloseButtonForeground}"/>
+                        <TextBlock Text="All game projects detected on system"
+                                   FontSize="13"
+                                   Foreground="Gray"/>
+                        <Button Content="Search Projects"
+                                Command="{Binding ScanProjectsCommand}"
+                                IsEnabled="{Binding !IsLoading}"
+                                Foreground="{DynamicResource CloseButtonForeground}"
+                                Background="{DynamicResource CloseButtonBackground}"
+                                Margin="0,10,0,0"
+                                Padding="16,8"/>
+                        <Button Content="Select Project Folder"
+                                Command="{Binding ImportProjectCommand}"
+                                IsEnabled="{Binding !IsLoading}"
+                                Foreground="{DynamicResource CloseButtonForeground}"
+                                Background="{DynamicResource CloseButtonBackground}"
+                                Margin="0,8,0,0"
+                                Padding="16,8"/>
+                    </StackPanel>
+
+                    <!-- Permission warning -->
+                    <Border Grid.Row="1"
+                            IsVisible="{Binding HasPermissionErrors}"
+                            Background="#FFFFFF"
+                            CornerRadius="8"
+                            Padding="12"
+                            Margin="0,0,0,12">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="⚠️ Permission Warning"
+                                       FontSize="13"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource WarnColor}"/>
+                            <TextBlock Text="{Binding PermissionWarningMessage}"
+                                       FontSize="12"
+                                       Foreground="{DynamicResource WarnColor}"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Projects List -->
+                    <Border Grid.Row="2"
+                            BorderBrush="{DynamicResource SidebarHoverBg}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="12">
+                        <Grid>
+
+                            <!-- Loading -->
+                            <TextBlock Text="Scanning Projects..."
+                                       IsVisible="{Binding IsLoading}"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       FontSize="14"
+                                       Foreground="Gray"/>
+
+                            <!-- Empty state -->
+                            <StackPanel IsVisible="{Binding IsEmpty}"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Spacing="8">
+                                <TextBlock Text="🎮"
+                                           FontSize="40"
+                                           HorizontalAlignment="Center"/>
+                                <TextBlock Text="No project found! Click 'import project' to manually find it"
+                                           FontSize="15"
+                                           Foreground="Gray"
+                                           HorizontalAlignment="Center"/>
+                                <TextBlock Text="Click in 'Search Projects' to start!"
+                                           FontSize="12"
+                                           Foreground="Gray"
+                                           HorizontalAlignment="Center"/>
+                            </StackPanel>
+
+                            <!-- Project items -->
+                            <ScrollViewer IsVisible="{Binding HasProjects}">
+                                <ItemsControl ItemsSource="{Binding Projects}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border BorderBrush="LightGray"
+                                                    BorderThickness="0,0,0,1"
+                                                    Margin="0,0,0,2">
+                                                <Grid ColumnDefinitions="*, Auto">
+                                                    <Button Grid.Column="0"
+                                                            Command="{Binding #RootWindow.DataContext.OpenProjectCommand}"
+                                                            CommandParameter="{Binding}"
+                                                            Background="Transparent"
+                                                            BorderThickness="0"
+                                                            HorizontalAlignment="Stretch"
+                                                            HorizontalContentAlignment="Left"
+                                                            Padding="10"
+                                                            Cursor="Hand">
+                                                        <StackPanel Spacing="4">
+                                                            <TextBlock Text="{Binding Name}"
+                                                                        FontSize="15"
+                                                                        FontWeight="SemiBold"/>
+                                                            <TextBlock Text="{Binding Path}"
+                                                                        FontSize="11"
+                                                                        Foreground="Gray"/>
+                                                            <StackPanel Orientation="Horizontal" Spacing="16">
+                                                                <TextBlock Text="{Binding EngineType, StringFormat='Engine: {0}'}"
+                                                                        FontSize="11"/>
+                                                                <TextBlock Text="{Binding DisplaySize}"
+                                                                        FontSize="11"/>
+                                                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                                                    <TextBlock Text="{Binding EngineVersion, StringFormat='Version: {0}'}"
+                                                                        FontSize="11"/>
+                                                                    <Button Command="{Binding #RootWindow.DataContext.SetVersionCommand}"
+                                                                        CommandParameter="{Binding}"
+                                                                        Content="⚠❗ SET VERSION"
+                                                                        FontSize="10"
+                                                                        Padding="4"
+                                                                        CornerRadius="8"
+                                                                        Background="{DynamicResource DangerColor}"
+                                                                        Foreground="White"
+                                                                        BorderThickness="0"
+                                                                        Cursor="Hand"
+                                                                        IsVisible="{Binding EngineVersion, Converter={x:Static StringConverters.IsNullOrEmpty}}"/>
+                                                                </StackPanel>
+                                                            </StackPanel>
+                                                        </StackPanel>
+                                                    </Button>
+
+                                                    <Button Grid.Column="1"
+                                                            Content="•••"
+                                                            Background="Transparent"
+                                                            BorderThickness="0"
+                                                            VerticalAlignment="Center"
+                                                            Padding="12,8"
+                                                            Cursor="Hand"
+                                                            FontSize="16">
+                                                        <Button.Flyout>
+                                                            <Flyout Placement="BottomEdgeAlignedRight">
+                                                                <StackPanel MinWidth="100" Spacing="2">
+                                                                    <Button Command="{Binding #RootWindow.DataContext.OpenInExplorerCommand}"
+                                                                            CommandParameter="{Binding}"
+                                                                            Background="Transparent"
+                                                                            BorderThickness="0"
+                                                                            HorizontalAlignment="Stretch"
+                                                                            HorizontalContentAlignment="Left"
+                                                                            Padding="12,8"
+                                                                            Cursor="Hand">
+                                                                        <StackPanel Orientation="Horizontal" Spacing="10">
+                                                                            <TextBlock Text="📂" FontSize="14"/>
+                                                                            <TextBlock Text="Open in Explorer" FontSize="13"/>
+                                                                        </StackPanel>
+                                                                    </Button>
+
+                                                                    <Button Command="{Binding #RootWindow.DataContext.RenameProjectCommand}"
+                                                                            CommandParameter="{Binding}"
+                                                                            Background="Transparent"
+                                                                            BorderThickness="0"
+                                                                            HorizontalAlignment="Stretch"
+                                                                            HorizontalContentAlignment="Left"
+                                                                            Padding="12,8"
+                                                                            Cursor="Hand">
+                                                                        <StackPanel Orientation="Horizontal" Spacing="10">
+                                                                            <TextBlock Text="✏️" FontSize="14"/>
+                                                                            <TextBlock Text="Rename" FontSize="13"/>
+                                                                        </StackPanel>
+                                                                    </Button>
+
+                                                                    <Border Height="1"
+                                                                            Background="Gray"
+                                                                            Opacity="0.4"
+                                                                            Margin="8,2"/>
+
+                                                                    <Button Command="{Binding #RootWindow.DataContext.DeleteProjectCommand}"
+                                                                            CommandParameter="{Binding}"
+                                                                            Background="Transparent"
+                                                                            BorderThickness="0"
+                                                                            HorizontalAlignment="Stretch"
+                                                                            HorizontalContentAlignment="Left"
+                                                                            Padding="12,8"
+                                                                            Cursor="Hand">
+                                                                        <StackPanel Orientation="Horizontal" Spacing="10">
+                                                                            <TextBlock Text="🗑️" FontSize="14" Foreground="{DynamicResource DangerColor}"/>
+                                                                            <TextBlock Text="Delete" FontSize="13" Foreground="{DynamicResource DangerColor}"/>
+                                                                        </StackPanel>
+                                                                    </Button>
+                                                                </StackPanel>
+                                                            </Flyout>
+                                                        </Button.Flyout>
+                                                    </Button>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+
+                        </Grid>
+                    </Border>
+
+                </Grid>
             </Grid>
-        </Border>
+
+        </Grid>
+        <!-- END MAIN LAYOUT -->
+
+
+        <!-- ════════════════════════════════════════════
+             OVERLAY: dim backdrop + settings panel
+             ════════════════════════════════════════════ -->
+        <Grid Name="SettingsOverlay"
+              IsVisible="False">
+
+            <Border Background="#000000"
+                    Opacity="0.55"
+                    Name="OverlayBackdrop"/>
+            <Button Classes="overlay-close"
+                    Click="OnOverlayBackdropClick"/>
+
+            <Border Name="SettingsPanel"
+                    Width="320"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Stretch"
+                    Margin="64,0,0,0"
+                    Background="{DynamicResource SystemAccentColorDark3}"
+                    BorderBrush="{DynamicResource SystemAccentColorLight3}"
+                    BorderThickness="0,0,1,0"
+                    BoxShadow="4 0 24 0 #40000000">
+
+                <Grid RowDefinitions="Auto,*,Auto" Margin="20,24,20,20">
+
+                    <StackPanel Grid.Row="0" Spacing="2" Margin="0,0,0,20">
+                        <TextBlock Text="Settings"
+                                   FontSize="17"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource CloseButtonForeground}"/>
+                        <Border Height="1"
+                                Background="#AAAAAA"
+                                Margin="0,10,0,0"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1" Spacing="24">
+
+                        <StackPanel Spacing="10">
+                            <TextBlock Text="Interface Theme"
+                                       FontSize="12"
+                                       FontWeight="SemiBold"
+                                       Foreground="#FFFFFF"
+                                       LetterSpacing="1"/>
+
+                            <Button Name="ThemeToggleButton"
+                                    Classes="theme-toggle-btn"
+                                    Click="OnThemeToggleClick">
+                                <StackPanel Orientation="Horizontal" Spacing="12">
+                                    <TextBlock Name="ThemeIcon"
+                                               Text="☀️"
+                                               FontSize="18"
+                                               VerticalAlignment="Center"/>
+                                    <StackPanel Spacing="1" VerticalAlignment="Center">
+                                        <TextBlock Name="ThemeLabel"
+                                                   Text="Light Theme"
+                                                   FontSize="13"
+                                                   FontWeight="Medium"
+                                                   Foreground="{DynamicResource CloseButtonForeground}"/>
+                                        <TextBlock Name="ThemeSubLabel"
+                                                   Text="Click me for Light Theme!"
+                                                   FontSize="10"
+                                                   Foreground="#aaaaaa"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                        <!-- Unity Engine -->
+                        <StackPanel Spacing="10">
+                            <TextBlock Text="Unity Engine"
+                                    FontSize="12"
+                                    FontWeight="SemiBold"
+                                    Foreground="#ffffff"
+                                    LetterSpacing="1"/>
+
+                            <TextBlock Text="Editor Path"
+                                    FontSize="12"
+                                    Foreground="#E8E8F5"/>
+
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                <TextBox Grid.Column="0"
+                                        Text="{Binding UnityEditorPath}"
+                                        FontSize="12"
+                                        VerticalContentAlignment="Center"
+                                        Foreground="{DynamicResource CloseButtonForeground}"
+                                        Background="{DynamicResource CloseButtonBackground}"/>
+                                <Button Grid.Column="1"
+                                        Content="Browse"
+                                        Command="{Binding BrowseUnityEditorPathCommand}"
+                                        Padding="12,8"
+                                        CornerRadius="8"
+                                        Foreground="{DynamicResource CloseButtonForeground}"
+                                        Background="{DynamicResource CloseButtonBackground}"
+                                        Cursor="Hand"/>
+                            </Grid>
+                        </StackPanel>
+                        <!-- Add more items to settings list here -->
+                    </StackPanel>
+
+                    <Button Grid.Row="2"
+                            Classes="close-btn"
+                            Content="Close"
+                            HorizontalAlignment="Right"
+                            Padding="16,8"
+                            CornerRadius="8"
+                            Foreground="{DynamicResource CloseButtonForeground}"
+                            Background="{DynamicResource CloseButtonBackground}"
+                            Click="OnSettingsClick"/>
+
+                </Grid>
+            </Border>
+
+        </Grid>
+        <!-- END OVERLAY -->
+
+        <!-- ════════════════════════════════════════════
+            OVERLAY: Rename Project
+            ════════════════════════════════════════════ -->
+        <Grid IsVisible="{Binding ShowRenameOverlay}">
+
+            <!-- Backdrop -->
+            <Border Background="#000000" Opacity="0.6"/>
+
+            <!-- Panel -->
+            <Border HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Width="440"
+                    Background="{DynamicResource SystemAccentColorDark1}"
+                    BorderBrush="{DynamicResource SystemAccentColorLight3}"
+                    BorderThickness="1"
+                    CornerRadius="16"
+                    Padding="24"
+                    BoxShadow="0 8 32 0 #80000000">
+
+                <StackPanel Spacing="16">
+
+                    <!-- Header -->
+                    <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                        <TextBlock Grid.Column="0"
+                                Text="Rename Project"
+                                FontSize="16"
+                                FontWeight="SemiBold"
+                                VerticalAlignment="Center"
+                                Foreground="#E8E8F5"/>
+
+                        <Button Grid.Column="1"
+                                Content="Cancel"
+                                Command="{Binding CancelRenameCommand}"
+                                Padding="16,8"
+                                CornerRadius="8"
+                                Cursor="Hand"
+                                Background="{DynamicResource CancelColor}"
+                                Foreground="White"
+                                BorderThickness="0"/>
+
+                        <Button Grid.Column="2"
+                                Content="Rename"
+                                Command="{Binding ConfirmRenameCommand}"
+                                Padding="16,8"
+                                CornerRadius="8"
+                                Cursor="Hand"
+                                Background="{DynamicResource SuccessColor}"
+                                Foreground="White"
+                                BorderThickness="0"/>
+                    </Grid>
+
+                    <!-- Input -->
+                    <TextBox Text="{Binding RenameInputText}"
+                            FontSize="13"
+                            Padding="10,8"
+                            CornerRadius="8"
+                            Watermark="Project name..."/>
+
+                    <!-- Error message -->
+                    <Border IsVisible="{Binding HasRenameError}"
+                            Background="{DynamicResource DangerColor}"
+                            CornerRadius="8"
+                            Padding="12,8">
+                        <TextBlock Text="{Binding RenameErrorMessage}"
+                                FontSize="12"
+                                Foreground="#FFFFFF"
+                                TextWrapping="Wrap"/>
+                    </Border>
+
+                </StackPanel>
+            </Border>
+
+        </Grid>
+        <!-- END RENAME OVERLAY -->
+
+        <!-- ════════════════════════════════════════════
+            OVERLAY: Set Version Manually
+            ════════════════════════════════════════════ -->
+        <Grid IsVisible="{Binding ShowVersionOverlay}">
+
+            <Border Background="#000000" Opacity="0.6"/>
+
+            <Border HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Width="440"
+                    Background="{DynamicResource SystemAccentColorDark1}"
+                    BorderBrush="{DynamicResource SystemAccentColorLight3}"
+                    BorderThickness="1"
+                    CornerRadius="16"
+                    Padding="24"
+                    BoxShadow="0 8 32 0 #80000000">
+
+                <StackPanel Spacing="16">
+
+                    <!-- Header -->
+                    <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                        <StackPanel Grid.Column="0" Spacing="2" VerticalAlignment="Center">
+                            <TextBlock Text="Set Unity Version"
+                                    FontSize="16"
+                                    FontWeight="SemiBold"
+                                    Foreground="#E8E8F5"/>
+                            <TextBlock Text="Could not detect version automatically."
+                                    FontSize="11"
+                                    Foreground="#aaaaaa"/>
+                        </StackPanel>
+
+                        <Button Grid.Column="1"
+                                Content="Cancel"
+                                Command="{Binding CancelVersionCommand}"
+                                Padding="16,8"
+                                CornerRadius="8"
+                                Cursor="Hand"
+                                Background="{DynamicResource CancelColor}"
+                                Foreground="White"
+                                BorderThickness="0"/>
+
+                        <Button Grid.Column="2"
+                                Content="Confirm"
+                                Command="{Binding ConfirmVersionCommand}"
+                                Padding="16,8"
+                                CornerRadius="8"
+                                Cursor="Hand"
+                                Background="{DynamicResource SuccessColor}"
+                                Foreground="White"
+                                BorderThickness="0"/>
+                    </Grid>
+
+                    <!-- Input -->
+                    <TextBox Text="{Binding VersionInputText}"
+                            FontSize="13"
+                            Padding="10,8"
+                            CornerRadius="8"
+                            Watermark="e.g. 2022.3.10f1"/>
+
+                    <!-- Error -->
+                    <Border IsVisible="{Binding HasVersionError}"
+                            Background="{DynamicResource DangerColor}"
+                            CornerRadius="8"
+                            Padding="12,8">
+                        <TextBlock Text="{Binding VersionErrorMessage}"
+                                FontSize="12"
+                                Foreground="#FFFFFF"
+                                TextWrapping="Wrap"/>
+                    </Border>
+
+                </StackPanel>
+            </Border>
+
+        </Grid>
+        <!-- END VERSION OVERLAY -->
+
+        <!-- ════════════════════════════════════════════
+                FLOATING ERROR: Invalid folder
+            ════════════════════════════════════════════ -->
+            <Border IsVisible="{Binding ShowInvalidFolderError}"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Bottom"
+                    Margin="0,0,0,24"
+                    Padding="16,12"
+                    CornerRadius="10"
+                    Background="{DynamicResource SystemAccentColorDark1}"
+                    BorderBrush="{DynamicResource SystemAccentColorLight3}"
+                    BorderThickness="1"
+                    BoxShadow="0 4 24 0 #60000000"
+                    MaxWidth="480">
+                <Grid ColumnDefinitions="*,Auto">
+
+                    <StackPanel Grid.Column="0" Spacing="4">
+                        <TextBlock Text="{Binding FloatingErrorMessage}"
+                                FontSize="13"
+                                FontWeight="SemiBold"
+                                Foreground="#EEEEEE"
+                                TextWrapping="Wrap"
+                                MinHeight="20"/>
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <TextBlock Text="If you think this is a mistake,"
+                                    FontSize="12"
+                                    Foreground="#CCCCCC"/>
+                            <Button Content="send us an Issue on GitHub"
+                                    Command="{Binding OpenGitHubIssuesCommand}"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Padding="0"
+                                    Foreground="{DynamicResource LinkColor}"
+                                    FontSize="12"
+                                    Cursor="Hand"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <Button Grid.Column="1"
+                            Content="✕"
+                            Command="{Binding DismissInvalidFolderErrorCommand}"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Foreground="#aaaaaa"
+                            FontSize="12"
+                            Padding="4,0,4,0"
+                            VerticalAlignment="Top"
+                            Cursor="Hand"/>
+                </Grid>
+            </Border>
+
     </Grid>
 </Window>

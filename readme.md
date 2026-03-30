@@ -40,9 +40,9 @@ If you're interested in adding support for other engines, we'd love your contrib
 - Project backup and restore
 
 ### 🛠️ Productivity Tools
-- Code generator (Singleton, Object Pool, State Machine, etc.)
-- ScriptableObject templates
-- Pre-configured project creator with folder structure
+- Translate localization files (translate game text to other languages) 
+- Automatically set static to game objects without animation
+- Performance statistics overlay (FPS, 1%, Delay in ms, etc)
 - Enhanced Package Manager
 
 ### 🔍 Analysis & Optimization
@@ -55,13 +55,13 @@ If you're interested in adding support for other engines, we'd love your contrib
 - Batch texture conversion and compression
 - 3D model optimization
 - Audio file processing
-- Sprite sheet generator
+- Post-Processing settings templates
 
 ### 🔧 Utilities
-- Enhanced Git integration (automatic LFS, .gitignore setup)
-- Automatic IDE detection
-- Quick access to important project folders
-- Snippet manager for code reuse across projects
+- Image and Audio converter
+- Recommended extensions
+- Game rate for your game (based on SOG recommendations)
+- Controller/Joystick inputs for keyboards for gamepad support
 
 ---
 
@@ -69,9 +69,6 @@ If you're interested in adding support for other engines, we'd love your contrib
 
 - **UI Framework**: [Avalonia UI](https://avaloniaui.net/) - Cross-platform C# interface
 - **Backend**: .NET 8+ (C#)
-- **Parsing**: YamlDotNet, Newtonsoft.Json
-- **Git Integration**: LibGit2Sharp
-- **Persistence**: SQLite / JSON local storage
 
 ---
 
@@ -81,6 +78,22 @@ If you're interested in adding support for other engines, we'd love your contrib
 - .NET 8.0 Runtime or higher
 - Windows 7+, macOS 10.15+, or Linux (kernel 4.15+)
 - Game engine installation (automatically detected)
+
+### Dependencies
+#### Linux
+Before running SOG, install the required dependencies:
+```bash
+chmod +x scripts/install-deps.sh
+./scripts/install-deps.sh
+```
+
+| Package | Purpose |
+|---|---|
+| `mpg123` | Audio playback |
+| `dbus-x11` | Folder picker dialog |
+
+#### Windows / macOS
+No additional dependencies required... for now
 
 ### Download
 
@@ -127,7 +140,9 @@ We're actively looking for contributors to help add support for:
 - **Unreal Engine**
 - **Godot**
 - **GameMaker Studio**
-- **Other popular engines**
+- **Stride**
+- **O3DE**
+- and the **macOS** build
 
 If you have experience with any of these engines and would like to contribute, please check our [Contributing Guidelines](CONTRIBUTING.md) and open a discussion to coordinate efforts!
 
@@ -137,28 +152,6 @@ If you have experience with any of these engines and would like to contribute, p
 - Add tests when applicable
 - Document new features in the README
 - Keep commits clear and descriptive
-
----
-
-## 📋 Roadmap
-
-**Current Focus (Unity Support):**
-- [x] Project dashboard with search and filters
-- [ ] Code generator with customizable templates
-- [ ] Plugin system for extensibility
-- [ ] Enhanced Git integration
-- [ ] Batch asset processing tools
-
-**Future Expansion:**
-- [ ] Unreal Engine support
-- [ ] Godot support
-- [ ] GameMaker Studio support
-- [ ] O3DE Game Engine support
-- [ ] Stride Game Engine support
-- [ ] Cross-engine project templates
-- [ ] Universal asset optimization tools
-
-See the [full issue list](https://github.com/RagsProjects/Sew-Own-Game/issues) for more details.
 
 ---
 

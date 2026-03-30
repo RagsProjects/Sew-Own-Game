@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using System.IO;
 using SewOwnGame.Core.Enums;
 using SewOwnGame.Core.Interfaces;
 using SewOwnGame.Core.Models;
@@ -9,57 +10,188 @@ public class UnityEngineSupport : IEngineSupport
 {
     public string EngineName => "Unity";
     public EngineType EngineType => EngineType.Unity;
-    
-    public string[] CommonProjectPaths
+
+    // ── Interface implementation ─────────────────────────────────
+    public bool HasPermissionErrors { get; private set; }
+    public string PermissionWarningMessage { get; private set; } = string.Empty;
+
+    // ── Cache to avoid scanning the same directory  ──────────────
+    private string[]? _cachedProjectPaths;
+    public string[] CommonProjectPaths => _cachedProjectPaths ??= BuildProjectPaths();
+
+    // ── Ignored folders in size calculations ─────────────────────
+    private static readonly HashSet<string> _excludedDirs = new(StringComparer.OrdinalIgnoreCase) { "Library", "Temp", "obj", "bin" };
+
+    /* ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+        Secure Scan (respect symlinks)
+       ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬ */
+    private static IEnumerable<string> SafeGetDirectories(string path)
     {
-        get
+        var result = new List<string>();
+        var stack = new Stack<string>();
+        stack.Push(path);
+
+        while (stack.Count > 0)
         {
-            var paths = new List<string>();
-            
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            var current = stack.Pop();
+            string[] subDirs;
+
+            try{ subDirs = Directory.GetDirectories(current); }
+            catch (UnauthorizedAccessException ex) { Console.WriteLine($"[SKIP-AUTH] {current}: {ex.Message}"); continue; }
+            catch (IOException ex) { Console.WriteLine($"[SKIP-IO] {current}: {ex.Message}"); continue; }
+
+            foreach (var dir in subDirs)
             {
-                // Windows
-                paths.Add(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Unity Projects"));
-                paths.Add(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Projects"));
-                paths.Add(@"C:\Projects");
-                paths.Add(@"D:\Projects");
+                try
+                {
+                    if (Directory.ResolveLinkTarget(dir, false) != null)
+                        continue;
+                    
+                    result.Add(dir);
+                    stack.Push(dir);
+                }
+                catch (IOException ex) { Console.WriteLine($"[SKIP-LINK] {dir}: {ex.Message}"); }
             }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            {
-                // Linux
-                var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-                // Linux include variations on different languages
-                paths.Add(Path.Combine(home, "Documents", "Unity Projects"));
-                paths.Add(Path.Combine(home, "Documentos", "Unity Projects")); // Portugues
-                paths.Add(Path.Combine(home, "Projects"));
-                paths.Add(Path.Combine(home, "UnityProjects"));
-                paths.Add(Path.Combine(home, "projects"));
-                paths.Add(Path.Combine(home, "unity-projects"));
-                paths.Add(Path.Combine(home));
-            }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-            {
-                // macOS
-                var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-                paths.Add(Path.Combine(home, "Documents", "Unity Projects"));
-                paths.Add(Path.Combine(home, "Projects"));
-                paths.Add(Path.Combine(home, "UnityProjects"));
-            }
-            
-            return paths.ToArray();
+        }
+
+        return result;
+    }
+
+    /* ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+        Building the paths for each OS
+       ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬ */
+    private string[] BuildProjectPaths()
+    {
+        // Resets the status of permissions for each new scan
+        HasPermissionErrors = false;
+        PermissionWarningMessage = string.Empty;
+
+        var paths = new List<string>();
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            CollectWindowsPaths(paths);
+        }
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        {
+            CollectLinuxPaths(paths);
+        }
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        {
+            CollectMacOSPaths(paths);
+        }
+        else
+        {
+            Console.WriteLine("[ERROR] Could't detect OS");
+        }
+
+        Console.WriteLine("[✔] Path collection complete");
+        return paths.ToArray();
+    }
+
+    private void CollectWindowsPaths(List<string> paths)
+    {
+        var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+        var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        var projectsPath = Path.Combine (userProfile, "Projects");
+
+        // Usual paths to game projects
+        paths.Add(Path.Combine(documents, "Unity Projects"));
+        paths.Add(projectsPath);
+        paths.Add(@"C:\Projects");
+        paths.Add(@"D:\Projects");
+
+        // Subfolders of documents
+        TryAddSubDirectories(documents, paths, SearchOption.AllDirectories);
+    }
+
+    private void CollectLinuxPaths(List<string> paths)
+    {
+        var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        var user = Environment.UserName;
+
+        foreach (var dir in SafeGetDirectories(home))
+            paths.Add(dir);
+
+        var mediaPaths = new[]
+        {
+            Path.Combine("/media", user),
+            Path.Combine("/run/media", user)
+        };
+
+        foreach (var mediaBase in mediaPaths)
+        {
+            if (!Directory.Exists(mediaBase)) continue;
+            foreach (var dir in SafeGetDirectories(mediaBase))
+                paths.Add(dir);
         }
     }
+
+    private void CollectMacOSPaths(List<string> paths)
+    {
+        var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        foreach (var dir in SafeGetDirectories(home))
+            paths.Add(dir);
+    }
+
+    // Adds subfolders, catching errors individually
+    private void TryAddSubDirectories(string basePath, List<string> paths, SearchOption option)
+    {
+        if (!Directory.Exists(basePath)) return;
+        try
+        {
+            foreach (var folder in Directory.GetDirectories(basePath, "*", option))
+                paths.Add(folder);
+        }
+        catch (UnauthorizedAccessException)
+        {
+            HasPermissionErrors = true;
+            PermissionWarningMessage = $"Some folders require elevated permissions and were skipped.";
+            Console.WriteLine($"[⚠] Permission error scanning: {basePath}");
+        }
+    }
+
+    private long CalculateDirectorySize(DirectoryInfo root)
+    {
+        long size = 0;
+        var stack = new Stack<DirectoryInfo>();
+        stack.Push(root);
+
+        while (stack.Count > 0)
+        {
+            var current = stack.Pop();
+            try
+            {
+                size += current.GetFiles().Sum(f => f.Length);
+                foreach (var dir in current.GetDirectories()
+                        .Where(d => !_excludedDirs.Contains(d.Name)))
+                    stack.Push(dir);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                // Error in terminal and in UI
+            }
+        }
+        return size;
+    }
     
+    /* ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+        Validation and loading game project
+       ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬ */
     public async Task<bool> IsValidProjectAsync(string path)
     {
+        /* This fix a issue when trying to detect a project folder in a Virtual Machine with Linux
+        Not sure if it happens in any other occasion, but I'll fix it just to be sure */
+        path = path.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+
         if (!Directory.Exists(path))
             return false;
             
-        // Unity MUST have those folders
-        var hasAssetsFolder = Directory.Exists(Path.Combine(path, "Assets"));
-        var hasProjectSettingsFolder = Directory.Exists(Path.Combine(path, "ProjectSettings"));
+        // It's expected that Unity have those folders
+        var hasAssets = Directory.Exists(Path.Combine(path, "Assets"));
+        var hasSettings = Directory.Exists(Path.Combine(path, "ProjectSettings"));
         
-        return await Task.FromResult(hasAssetsFolder && hasProjectSettingsFolder);
+        return await Task.FromResult(hasAssets && hasSettings);
     }
     
     public async Task<GameProject?> LoadProjectAsync(string path)
@@ -68,17 +200,15 @@ public class UnityEngineSupport : IEngineSupport
             return null;
             
         var dirInfo = new DirectoryInfo(path);
-        long size = CalculateDirectorySize(dirInfo);
-        string version = DetectEngineVersion(path);
         
         return new GameProject
         {
             Name = dirInfo.Name,
             Path = path,
             EngineType = EngineType,
-            EngineVersion = version,
+            EngineVersion = DetectEngineVersion(path),
             LastModified = dirInfo.LastWriteTime,
-            SizeInBytes = size
+            SizeInBytes = CalculateDirectorySize(dirInfo)
         };
     }
     
@@ -88,16 +218,12 @@ public class UnityEngineSupport : IEngineSupport
         {
             var versionFile = Path.Combine(projectPath, "ProjectSettings", "ProjectVersion.txt");
             
-            if (File.Exists(versionFile))
+            if (!File.Exists(versionFile)) { return string.Empty; }
+
+            foreach (var line in File.ReadAllLines(versionFile))
             {
-                var lines = File.ReadAllLines(versionFile);
-                foreach (var line in lines)
-                {
-                    if (line.StartsWith("m_EditorVersion:"))
-                    {
-                        return line.Split(':')[1].Trim();
-                    }
-                }
+                if (line.StartsWith("m_EditorVersion:"))
+                    return line.Split(':', 2)[1].Trim();
             }
         }
         catch
@@ -105,33 +231,6 @@ public class UnityEngineSupport : IEngineSupport
             // Ignore errors
         }
         
-        return "Unknown";
-    }
-    
-    private long CalculateDirectorySize(DirectoryInfo directory)
-    {
-        long size = 0;
-        
-        try
-        {
-            foreach (var file in directory.GetFiles())
-            {
-                size += file.Length;
-            }
-            
-            foreach (var dir in directory.GetDirectories())
-            {
-                if (dir.Name != "Library" && dir.Name != "Temp" && dir.Name != "obj" && dir.Name != "bin")
-                {
-                    size += CalculateDirectorySize(dir);
-                }
-            }
-        }
-        catch (UnauthorizedAccessException)
-        {
-            // Ignore folder with not enough permissions
-        }
-        
-        return size;
+        return string.Empty;
     }
 }
