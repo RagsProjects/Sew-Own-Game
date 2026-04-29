@@ -9,6 +9,10 @@
 Just as a tailor needs sewing tools to make final adjustments to their creation, game developers need Sew Own Game to fine-tune and polish their projects. SOG is an open-source suite of productivity tools designed to automate repetitive tasks and streamline your development process.
 
 ---
+# ⚠️ WARNING!!! ⚠️
+## THIS PROJECT IS ABANDONED DUE TO LACK OF PEOPLE CONTRIBUTING TO THE PROJECT
+YOU ARE STILL FREE TO FORK AND WORK ON IT, BUT BE AWARE THAT THIS CODE MAY HAVE BUGS, ESPECIALLY IN MAC SYSTEMS, SINCE THERE WAS NO ONE BUT ME TO TEST IT IN WINDOWS AND LINUX
+---
 
 ## 🎯 Project Proposal
 
